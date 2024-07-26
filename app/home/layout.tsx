@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignOutButton } from "@clerk/nextjs";
 import { Group, HomeIcon, LogOut, User, UserPlus } from "lucide-react";
 
 export default function HomeLayout({
@@ -38,6 +38,7 @@ export default function HomeLayout({
             </div>
           </div>
           <div>
+            <SignOutButton />
             <SidebarLink
               link={{
                 label: `${user.fullName ? user.fullName : "<no username>"}`,
@@ -115,11 +116,11 @@ const links = [
       <User className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
     ),
   },
-  {
-    label: "Logout",
-    href: "#",
-    icon: (
-      <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-    ),
-  },
+  // {
+  //   label: "Logout",
+  //   href: "#",
+  //   icon: (
+  //     <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+  //   ),
+  // },
 ];

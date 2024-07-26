@@ -9,40 +9,36 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(MEMBER)
-  events    Event[]  @relation("UserEvents")
-  groups    Group[]  @relation("UserGroups")
-
-  Group Group[]
-}
-
-model Event {
-  id        Int      @id @default(autoincrement())
-  title     String
-  startTime DateTime
-  endTime   DateTime
-  groupId   Int
-  group     Group    @relation(fields: [groupId], references: [id])
-  users     User[]   @relation("UserEvents")
+  id     String        @id @unique @default(cuid())
+  email  String        @unique
+  name   String?
+  groups GroupMember[]
+  Group  Group[]
 }
 
 model Group {
-  id        Int      @id @default(autoincrement())
+  id        String        @id @default(uuid())
   name      String
-  creatorId Int
-  creator   User     @relation(fields: [creatorId], references: [id])
-  members   User[]   @relation("UserGroups")
-  events    Event[]
+  creatorId String
+  creator   User          @relation(fields: [creatorId], references: [id])
+  members   GroupMember[]
+}
+
+model GroupMember {
+  id      String @id @default(uuid())
+  userId  String
+  groupId String
+  role    Role
+  user    User   @relation(fields: [userId], references: [id])
+  group   Group  @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId])
 }
 
 enum Role {
