@@ -23,11 +23,12 @@ model User {
 }
 
 model Group {
-  id        String        @id @default(uuid())
-  name      String
-  creatorId String
-  creator   User          @relation(fields: [creatorId], references: [id])
-  members   GroupMember[]
+  id          String        @id @default(uuid())
+  name        String
+  description String
+  creatorId   String
+  creator     User          @relation(fields: [creatorId], references: [id])
+  members     GroupMember[]
 }
 
 model GroupMember {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const JoinCreate = () => {
   return (
@@ -27,7 +28,9 @@ const JoinCreate = () => {
           admin of the group.
         </p>
         <div className="flex w-full max-w-sm items-center space-x-2">
-          <Button>Create</Button>
+          <Button asChild>
+            <Link href="/home/joincreate/create">Create</Link>
+          </Button>
         </div>
       </div>
     </div>
