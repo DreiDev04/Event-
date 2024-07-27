@@ -41,7 +41,7 @@ export default function CalendarUI() {
   ];
   return (
     <>
-      <h2 className="mb-20">Syncfusion React Schedule Component</h2>
+      {/* <h2 className="mb-20">Syncfusion React Schedule Component</h2> */}
       <ScheduleComponent
         width="100%"
         height="700px"

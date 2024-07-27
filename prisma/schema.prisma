@@ -29,6 +29,7 @@ model Group {
   creatorId   String
   creator     User          @relation(fields: [creatorId], references: [id])
   members     GroupMember[]
+  // groupEvents GroupEvent[]
 }
 
 model GroupMember {
@@ -41,6 +42,21 @@ model GroupMember {
 
   @@unique([userId, groupId])
 }
+
+// model GroupEvent {
+//   id      String @id @default(uuid())
+//   subject String
+//   startTime DateTime
+//   endTime   DateTime
+//   isAllDay  Boolean
+//   projectId String
+//   taskId   String
+//   group    Group  @relation(fields: [groupId], references: [id])
+//   groupId  String
+//   project  Project? @relation(fields: [projectId], references: [id])
+//   task     Task?    @relation(fields: [taskId], references: [id])
+// }
+
 
 enum Role {
   CREATOR
