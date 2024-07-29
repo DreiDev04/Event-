@@ -15,11 +15,11 @@ datasource db {
 }
 
 model User {
-  id     String        @id @unique @default(cuid())
-  email  String        @unique
-  name   String?
-  groups GroupMember[]
-  Group  Group[]
+  id        String        @id @default(cuid())
+  email     String        @unique
+  name      String?
+  groups    GroupMember[]
+  groupsCreated Group[]
 }
 
 model Group {
@@ -29,34 +29,34 @@ model Group {
   creatorId   String
   creator     User          @relation(fields: [creatorId], references: [id])
   members     GroupMember[]
-  // groupEvents GroupEvent[]
+  groupEvents GroupEvent[]
+  @@index([creatorId])
 }
 
 model GroupMember {
-  id      String @id @default(uuid())
-  userId  String
-  groupId String
-  role    Role
-  user    User   @relation(fields: [userId], references: [id])
-  group   Group  @relation(fields: [groupId], references: [id])
+  id        String @id @default(uuid())
+  userId    String
+  groupId   String
+  role      Role
+  user      User   @relation(fields: [userId], references: [id])
+  group     Group  @relation(fields: [groupId], references: [id])
 
   @@unique([userId, groupId])
+  @@index([userId])
+  @@index([groupId])
 }
 
-// model GroupEvent {
-//   id      String @id @default(uuid())
-//   subject String
-//   startTime DateTime
-//   endTime   DateTime
-//   isAllDay  Boolean
-//   projectId String
-//   taskId   String
-//   group    Group  @relation(fields: [groupId], references: [id])
-//   groupId  String
-//   project  Project? @relation(fields: [projectId], references: [id])
-//   task     Task?    @relation(fields: [taskId], references: [id])
-// }
+model GroupEvent {
+  id        String   @id @default(uuid())
+  groupId   String
+  subject   String
+  startTime DateTime
+  endTime   DateTime
+  isAllDay  Boolean
+  group     Group    @relation(fields: [groupId], references: [id])
 
+  @@index([groupId])
+}
 
 enum Role {
   CREATOR

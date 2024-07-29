@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prismaClient"; // Adjust the path as needed
-// import { useUser, useAuth } from "@clerk/nextjs";
+import prisma from "@/lib/prismaClient";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 export async function GET(req: NextRequest) {

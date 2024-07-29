@@ -32,30 +32,31 @@ const Page = () => {
     };
     if (user?.id && params) {
       fetchGroup();
-      console.log(response)
     }
   }, [params, user?.id]);
 
+  const groupId = response?.group.id;
+
   return (
     <div>
-      {/* <CalendarUI /> */}
-    </div>
-    // <div>
-    //   {response ? (
-    //     <div>
-    //       <h1>{response.group.name}</h1>
-    //       <p>{response.group.description}</p>
-    //       <p>Members: {response.group.members.length}</p>
+      <CalendarUI groupId={groupId}/>
+      <div>
+        {response ? (
+          <div>
+            <h1>{response.group.name}</h1>
+            <p>{response.group.description}</p>
+            <p>Members: {response.group.members.length}</p>
 
-    //       <h2>Members</h2>
-    //       <ul>
-    //         {response.group.members.map((member: any) => (
-    //           <li key={member.id}>{member.email}</li>
-    //         ))}
-    //       </ul>
-    //     </div>
-    //   ) : null}
-    // </div>
+            <h2>Members</h2>
+            <ul>
+              {response.group.members.map((member: any) => (
+                <li key={member.id}>{member.id}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 };
 
