@@ -14,6 +14,9 @@ import {
 import React, { useState, useEffect } from "react";
 import { registerLicense } from "@syncfusion/ej2-base";
 import moment from "moment-timezone";
+import "@/styles/calendarui.css";
+import { GroupEvent } from "@prisma/client";
+import { useUser } from "@clerk/nextjs";
 
 if (!process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY) {
   throw new Error("NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY is not set");
@@ -28,6 +31,7 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
   const [timelineResourceData, setTimelineResourceData] = useState<Object[]>(
     []
   );
+  const { user } = useUser();
 
   useEffect(() => {
     registerLicense(licenseKey);
@@ -43,16 +47,19 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
         const data = await response.json();
         console.log("Fetched Events Data:", data.event);
 
-        const transformedData = data.event.map((event: any) => {
-          return {
-            Id: event.id,
-            Subject: event.subject,
-            StartTime: event.startTime,
-            EndTime: event.endTime,
-            IsAllDay: event.isAllDay,
-          };
-        });
-
+        const transformedData: GroupEvent[] = data.event.map(
+          (event: GroupEvent) => {
+            return {
+              Id: event.Id,
+              Subject: event.Subject,
+              StartTime: new Date(event.StartTime),
+              EndTime: new Date(event.EndTime),
+              IsAllDay: event.IsAllDay,
+              Location: event.Location,
+            };
+          }
+        );
+        console.log("Transformed Data:", transformedData);
         setTimelineResourceData(transformedData);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -70,12 +77,79 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
 
   const handleEvent = async (args: any) => {
     if (args.requestType === "eventCreate") {
-      console.log("Event Created");
-      // Handle event creation
+      const formatted:GroupEvent[] = args.data.map((event: GroupEvent) => {
+        return {
+          ...event,
+          StartTime: new Date(event.StartTime),
+          EndTime: new Date(event.EndTime),
+        };
+      });
+      const response = await fetch(
+        `/api/group/${user?.id}/t/${groupId}/events`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formatted),
+        }
+      );
+      if (!response.ok) {
+        console.error("Failed to create event");
+        //TODO: Handle error
+      } else {
+        const data = await response.json();
+        console.log("Event Created", data);
+      }
     } else if (args.requestType === "eventChange") {
       console.log("Event Change");
+      console.log("Event Change Data:", args.data);
+      const arrayArgs = Array.isArray(args.data) ? args.data : [args.data];
+      // const ress = arrayArgs.map((event: GroupEvent) => {
+      //   return {
+      //     ...event,
+      //     StartTime: new Date(event.StartTime),
+      //     EndTime: new Date(event.EndTime),
+      //   };
+      // });
+      // console.log("Event Change Data:", ress);
+
+      const formatted:GroupEvent[] = arrayArgs.map((event: GroupEvent) => {
+        return {
+          ...event,
+          StartTime: new Date(event.StartTime),
+          EndTime: new Date(event.EndTime),
+        };
+      });
+      const response = await fetch(
+        `/api/group/${user?.id}/t/${groupId}/events`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formatted),
+        }
+      );
+      const data = await response.json();
+      console.log("Event Updated", data);
     } else if (args.requestType === "eventRemove") {
+      
+      const eventId = args.data[0].Id;
+
       console.log("Event Remove");
+      const response = await fetch(
+        `/api/group/${user?.id}/t/${groupId}/events`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(eventId),
+        }
+      );
+      const data = await response.json();
+      console.log("Event Deleted", data);
     }
   };
 
@@ -88,11 +162,12 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
       <ScheduleComponent
         width="100%"
         height="700px"
-        currentView="Week"
+        currentView="Month"
         selectedDate={new Date()}
         eventSettings={eventSettings}
         actionBegin={handleEvent}
         timezone="UTC"
+        // className="bg-red-500"
       >
         <ViewsDirective>
           <ViewDirective option="Week" />

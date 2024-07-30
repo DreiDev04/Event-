@@ -47,12 +47,13 @@ model GroupMember {
 }
 
 model GroupEvent {
-  id        String   @id @default(uuid())
+  Id        String   @id @default(uuid())
   groupId   String
-  subject   String
-  startTime DateTime
-  endTime   DateTime
-  isAllDay  Boolean
+  Subject   String
+  StartTime DateTime
+  EndTime   DateTime
+  IsAllDay  Boolean
+  Location  String?
   group     Group    @relation(fields: [groupId], references: [id])
 
   @@index([groupId])

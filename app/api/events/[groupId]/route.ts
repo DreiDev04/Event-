@@ -10,11 +10,8 @@ export async function GET(req: NextRequest, { params }: { params: { _groupId: st
     if (!authUserId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    // const event = await prisma.groupEvent.findMany({
-    //   where:{
-    //     groupId: _groupId
-    //   }
-    // });
+    //TODO: Check if user is in group
+    // const isUserInGroup = await prisma.group.findFirst({
     const event = await prisma.groupEvent.findMany({
       where: {
         groupId: _groupId
