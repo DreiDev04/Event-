@@ -25,9 +25,10 @@ const licenseKey = process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY;
 
 interface CalendarUIProps {
   groupId?: string;
+  isRO: boolean;
 }
 
-const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
+const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
   const [timelineResourceData, setTimelineResourceData] = useState<Object[]>(
     []
   );
@@ -40,14 +41,18 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(`/api/events/${groupId}`);
+        console.log("fetching ...")
+        const response = await fetch(`/api/group/${user?.id}/t/${groupId}/events`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
         const data = await response.json();
-        console.log("Fetched Events Data:", data.event);
-
-        const transformedData: GroupEvent[] = data.event.map(
+        const transformedData: GroupEvent[] = data.fetchedEvent.map(
           (event: GroupEvent) => {
             return {
               Id: event.Id,
@@ -59,7 +64,7 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
             };
           }
         );
-        console.log("Transformed Data:", transformedData);
+
         setTimelineResourceData(transformedData);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -105,14 +110,6 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
       console.log("Event Change");
       console.log("Event Change Data:", args.data);
       const arrayArgs = Array.isArray(args.data) ? args.data : [args.data];
-      // const ress = arrayArgs.map((event: GroupEvent) => {
-      //   return {
-      //     ...event,
-      //     StartTime: new Date(event.StartTime),
-      //     EndTime: new Date(event.EndTime),
-      //   };
-      // });
-      // console.log("Event Change Data:", ress);
 
       const formatted:GroupEvent[] = arrayArgs.map((event: GroupEvent) => {
         return {
@@ -167,6 +164,7 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId }) => {
         eventSettings={eventSettings}
         actionBegin={handleEvent}
         timezone="UTC"
+        readonly={!isRO}
         // className="bg-red-500"
       >
         <ViewsDirective>

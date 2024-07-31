@@ -36,10 +36,23 @@ const Page = () => {
   }, [params, user?.id]);
 
   const groupId = response?.group.id;
+  console.log(response?.group.members);
+  // const isUserMember = response?.group.members.map((member: any) => member.id).includes(user?.id);
+  const isUserMember = response?.group.members.some((member: any) => {
+    if (member.role === "CREATOR" || member.role === "ADMIN") {
+      return true;
+    } else if (member.role === "MEMBER") {
+      return false;
+    } else {
+      return false;
+    }
+    // (member.role === "CREATOR" || member.role === "ADMIN") || member.role === "MEMBER"
+  });
 
+  console.log("member  is: ", isUserMember);
   return (
     <div>
-      <CalendarUI groupId={groupId}/>
+      <CalendarUI groupId={groupId} isRO={isUserMember}/>
       <div>
         {response ? (
           <div>

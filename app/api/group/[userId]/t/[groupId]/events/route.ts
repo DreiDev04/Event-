@@ -3,6 +3,59 @@ import prisma from "@/lib/prismaClient";
 import { getAuth } from "@clerk/nextjs/server";
 import { GroupEvent } from "@prisma/client";
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { userId: string; groupId: string } }
+) {
+  try {
+    const authUserId = getAuth(req);
+    if (!authUserId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    const { userId, groupId } = params;
+    //TODO: Check if user is in group and is admin or creator
+
+    if (userId !== authUserId.userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    console.log("fetching events for group: ", groupId);
+    const fetchedEvent = await prisma.groupEvent.findMany({
+      where: {
+        groupId: groupId,
+        group: {
+          members: {
+            some: {
+              userId: userId,
+              role: {
+                in: ['CREATOR', 'ADMIN', 'MEMBER']
+              }
+            }
+          }
+        }
+      },
+      include: {
+        group: {
+          include: {
+            members: true
+          }
+        }
+      }
+    });
+
+    if (!fetchedEvent) {
+      return NextResponse.json({ message: "Event not found" }, { status: 404 });
+    }
+    console.log("fetch: ",fetchedEvent);
+    return NextResponse.json({ fetchedEvent });
+  } catch (error) {
+    console.error("Error fetching group:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch group", error: error as Error },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { userId: string; groupId: string } }

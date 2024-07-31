@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-
+    //TODO: add authentication check
     const newGroup = await prisma.group.create({
       data: {
         name: group_name,
