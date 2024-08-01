@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { Calendar } from "lucide-react";
+import { Calendar, MenuIcon } from "lucide-react";
 import CalendarUI from "@/app/_components/CalendarUI";
+import { Button } from "@/components/ui/button";
 
 const Page = () => {
   const params = useParams();
@@ -36,7 +37,7 @@ const Page = () => {
   }, [params, user?.id]);
 
   const groupId = response?.group.id;
-  console.log(response?.group.members);
+  // console.log(response?.group.members);
   // const isUserMember = response?.group.members.map((member: any) => member.id).includes(user?.id);
   const isUserMember = response?.group.members.some((member: any) => {
     if (member.role === "CREATOR" || member.role === "ADMIN") {
@@ -49,11 +50,14 @@ const Page = () => {
     // (member.role === "CREATOR" || member.role === "ADMIN") || member.role === "MEMBER"
   });
 
-  console.log("member  is: ", isUserMember);
+  // console.log("member  is: ", isUserMember);
   return (
     <div>
-      <CalendarUI groupId={groupId} isRO={isUserMember}/>
-      <div>
+      <div className="w-full p-3 flex justify-between items-center ">
+        <h1>{response?.group.name} </h1>
+      </div>
+      <CalendarUI groupId={groupId} isRO={isUserMember} />
+      {/* <div>
         {response ? (
           <div>
             <h1>{response.group.name}</h1>
@@ -68,7 +72,7 @@ const Page = () => {
             </ul>
           </div>
         ) : null}
-      </div>
+      </div> */}
     </div>
   );
 };

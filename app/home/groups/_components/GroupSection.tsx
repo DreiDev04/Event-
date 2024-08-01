@@ -15,7 +15,7 @@ const GroupSection = ({ groups }: GroupSectionProps) => {
           groups.map((group) => (
             <Link
               key={group.id}
-              className="p-3 hover:bg-muted rounded-sm"
+              className="p-3 hover:bg-muted rounded-sm border-b"
               href={`/home/groups/t/${group.id}`}
             >
               <h1 className="font-bold">{group.name}</h1>

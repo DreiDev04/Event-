@@ -7,6 +7,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useUser, SignOutButton } from "@clerk/nextjs";
 import { Group, HomeIcon, LogOut, User, UserPlus } from "lucide-react";
+import Loader from "@/components/loaders/Loaders";
 
 export default function HomeLayout({
   children,
@@ -17,7 +18,11 @@ export default function HomeLayout({
   const [open, setOpen] = useState(false);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
   }
 
   return (

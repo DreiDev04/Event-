@@ -17,6 +17,7 @@ import moment from "moment-timezone";
 import "@/styles/calendarui.css";
 import { GroupEvent } from "@prisma/client";
 import { useUser } from "@clerk/nextjs";
+import Loader from "@/components/loaders/Loaders";
 
 if (!process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY) {
   throw new Error("NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY is not set");
@@ -41,13 +42,16 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        console.log("fetching ...")
-        const response = await fetch(`/api/group/${user?.id}/t/${groupId}/events`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        console.log("fetching ...");
+        const response = await fetch(
+          `/api/group/${user?.id}/t/${groupId}/events`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
@@ -82,7 +86,7 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
 
   const handleEvent = async (args: any) => {
     if (args.requestType === "eventCreate") {
-      const formatted:GroupEvent[] = args.data.map((event: GroupEvent) => {
+      const formatted: GroupEvent[] = args.data.map((event: GroupEvent) => {
         return {
           ...event,
           StartTime: new Date(event.StartTime),
@@ -111,7 +115,7 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
       console.log("Event Change Data:", args.data);
       const arrayArgs = Array.isArray(args.data) ? args.data : [args.data];
 
-      const formatted:GroupEvent[] = arrayArgs.map((event: GroupEvent) => {
+      const formatted: GroupEvent[] = arrayArgs.map((event: GroupEvent) => {
         return {
           ...event,
           StartTime: new Date(event.StartTime),
@@ -131,7 +135,6 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
       const data = await response.json();
       console.log("Event Updated", data);
     } else if (args.requestType === "eventRemove") {
-      
       const eventId = args.data[0].Id;
 
       console.log("Event Remove");
@@ -151,14 +154,18 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
   };
 
   if (!groupId) {
-    return <div>No Group ID</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 rounded-md">
       <ScheduleComponent
         width="100%"
-        height="700px"
+        height="900px"
         currentView="Month"
         selectedDate={new Date()}
         eventSettings={eventSettings}
