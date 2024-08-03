@@ -42,7 +42,7 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        console.log("fetching ...");
+        // console.log("fetching ...");
         const response = await fetch(
           `/api/group/${user?.id}/t/${groupId}/events`,
           {
@@ -171,7 +171,7 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
         eventSettings={eventSettings}
         actionBegin={handleEvent}
         timezone="UTC"
-        readonly={!isRO}
+        readonly={isRO}
         // className="bg-red-500"
       >
         <ViewsDirective>

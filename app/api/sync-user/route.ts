@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   if (!user) {
     return new NextResponse("User not exist", { status: 404 });
   }
+  
 
   try {
     // Check if the user already exists in your database
@@ -27,6 +28,7 @@ export async function GET(req: NextRequest) {
           id: user.id, // Clerk user ID
           email: user.emailAddresses[0].emailAddress || "",
           name: user.fullName || "",
+          imageUrl: user.imageUrl || "",
         },
       });
     } else {
@@ -36,6 +38,7 @@ export async function GET(req: NextRequest) {
         data: {
           email: user.emailAddresses[0].emailAddress || "",
           name: user.firstName || "",
+          imageUrl: user.imageUrl || "",
         },
       });
     }

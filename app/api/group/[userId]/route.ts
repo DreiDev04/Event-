@@ -10,8 +10,8 @@ export async function GET(
     const authUserId = getAuth(req);
     const { userId } = params;
 
-    console.log("Params:", userId);
-    console.log("User ID:", userId);
+    // console.log("Params:", userId);
+    // console.log("User ID:", userId);
 
     if (!authUserId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -22,7 +22,11 @@ export async function GET(
 
     const userGroups = await prisma.group.findMany({
       where: {
-        creatorId: authUserId.userId,
+        members: {
+          some: {
+            userId: userId,
+          },
+        },
       },
     });
 

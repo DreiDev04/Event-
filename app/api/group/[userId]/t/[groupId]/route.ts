@@ -18,8 +18,12 @@ export async function GET(req: NextRequest, { params }: { params: { groupId: str
     const group = await prisma.group.findUnique({
       where: { id: groupId },
       include: {
-        members: true, // Include members if you need them
-        creator: true, // Include creator if you need it
+        members: {
+          include: {
+            user: true, 
+          },
+        }, 
+        creator: true, 
       },
     });
     

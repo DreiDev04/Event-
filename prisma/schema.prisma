@@ -15,10 +15,11 @@ datasource db {
 }
 
 model User {
-  id        String        @id @default(cuid())
-  email     String        @unique
-  name      String?
-  groups    GroupMember[]
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String?
+  imageUrl      String?
+  groups        GroupMember[]
   groupsCreated Group[]
 }
 
@@ -30,16 +31,17 @@ model Group {
   creator     User          @relation(fields: [creatorId], references: [id])
   members     GroupMember[]
   groupEvents GroupEvent[]
+
   @@index([creatorId])
 }
 
 model GroupMember {
-  id        String @id @default(uuid())
-  userId    String
-  groupId   String
-  role      Role
-  user      User   @relation(fields: [userId], references: [id])
-  group     Group  @relation(fields: [groupId], references: [id])
+  id      String @id @default(uuid())
+  userId  String
+  groupId String
+  role    Role
+  user    User   @relation(fields: [userId], references: [id])
+  group   Group  @relation(fields: [groupId], references: [id])
 
   @@unique([userId, groupId])
   @@index([userId])

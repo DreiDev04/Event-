@@ -6,6 +6,9 @@ import { useUser } from "@clerk/nextjs";
 import { Calendar, MenuIcon } from "lucide-react";
 import CalendarUI from "@/app/_components/CalendarUI";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ProfileCards from "./_components/ProfileCards";
+import MemberCards from "./_components/MemberCards";
 
 const Page = () => {
   const params = useParams();
@@ -37,42 +40,58 @@ const Page = () => {
   }, [params, user?.id]);
 
   const groupId = response?.group.id;
-  // console.log(response?.group.members);
-  // const isUserMember = response?.group.members.map((member: any) => member.id).includes(user?.id);
-  const isUserMember = response?.group.members.some((member: any) => {
-    if (member.role === "CREATOR" || member.role === "ADMIN") {
-      return true;
-    } else if (member.role === "MEMBER") {
-      return false;
-    } else {
-      return false;
-    }
-    // (member.role === "CREATOR" || member.role === "ADMIN") || member.role === "MEMBER"
+  
+  const clientUser = response?.group.members.filter((member : {user: {id: string}}) => {
+    return member.user.id === user?.id;
   });
+  const isUserRO = clientUser && clientUser[0].role === "MEMBER" ? true : false;
 
-  // console.log("member  is: ", isUserMember);
   return (
     <div>
       <div className="w-full p-3 flex justify-between items-center ">
         <h1>{response?.group.name} </h1>
       </div>
-      <CalendarUI groupId={groupId} isRO={isUserMember} />
-      {/* <div>
+      <CalendarUI groupId={groupId} isRO={isUserRO} />
+      <br />
+      <br />
+      <br />
+      <div className=" border p-10">
         {response ? (
-          <div>
-            <h1>{response.group.name}</h1>
-            <p>{response.group.description}</p>
-            <p>Members: {response.group.members.length}</p>
-
-            <h2>Members</h2>
-            <ul>
-              {response.group.members.map((member: any) => (
-                <li key={member.id}>{member.id}</li>
+          <div className=" grid grid-cols-3 gap-4">
+            <div className="border rounded-md md:col-span-2 col-span-3 min-h-36 p-5">
+              <h1 className="text-4xl font-semibold">{response.group.name}</h1>
+              <p className="text-lg">{response.group.description}</p>
+              <p className="text-sm">
+                Members: {response.group.members.length}
+              </p>
+              <p className="text-sm">Group Id: {response.group.id}</p>
+            </div>
+            <div className="col-span-3 md:col-span-1 min-h-36">
+              <ProfileCards
+                imageUrl={response.group.creator.imageUrl}
+                name={response.group.creator.name}
+                role={"CREATOR"}
+              />
+            </div>
+            <div className="border rounded-md col-span-3 min-h-36 p-5">
+              <h1 className="text-lg">Admins</h1>
+            </div>
+            <div className="border rounded-md col-span-3 min-h-36 p-5">
+              <h1 className="text-lg mb-2">Members</h1>
+              <div className="grid grid-cols-5 gap-3">
+                {response.group.members.map((member: any) => (
+                <MemberCards
+                imageUrl={member.user.imageUrl}
+                name={member.user.name}
+                role={member.role}
+                key={member.user.id}
+                />
               ))}
-            </ul>
+              </div>
+            </div>
           </div>
         ) : null}
-      </div> */}
+      </div>
     </div>
   );
 };

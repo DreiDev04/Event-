@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
+import { Mulish as FontSans } from "next/font/google";
 import "@/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
@@ -10,6 +10,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: "300",
 });
 
 export const metadata: Metadata = {
