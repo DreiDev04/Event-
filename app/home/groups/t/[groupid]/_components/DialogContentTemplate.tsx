@@ -19,7 +19,7 @@ export function DialogContentTemplate({
   onConfirm,
 }: DialogContentTemplateProps) {
   return (
-    <DialogContent>
+    <DialogContent aria-description="manage-user">
       <DialogHeader>
         {content === "admin" ? (
           <>

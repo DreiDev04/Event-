@@ -58,6 +58,8 @@ const Page = () => {
   );
   const isUserRO = clientUser && clientUser[0].role === "MEMBER" ? true : false;
 
+  const currentRole = clientUser && clientUser[0].role;
+
   const handleManageGroup = () => {
     setOpenDialog((prev) => !prev);
   };
@@ -134,6 +136,7 @@ const Page = () => {
                         role={member.role}
                         key={member.user.id}
                         onUpdateRole={updateMemberRole}
+                        currentRole={currentRole}
                       />
                     ) : null
                   )
@@ -160,6 +163,7 @@ const Page = () => {
                         role={member.role}
                         key={member.user.id}
                         onUpdateRole={updateMemberRole}
+                        currentRole={currentRole}
                       />
                     ) : null
                   )

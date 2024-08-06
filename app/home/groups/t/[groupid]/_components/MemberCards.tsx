@@ -19,7 +19,8 @@ type MemberCardsProps = {
   role: string;
   id: string;
   groupId: string;
-  onUpdateRole: (userId: string, newRole: string) => void; // Add this prop
+  onUpdateRole: (userId: string, newRole: string) => void;
+  currentRole?: "ADMIN" | "MEMBER" | "CREATOR";
 };
 
 const MemberCards: React.FC<MemberCardsProps> = ({
@@ -29,6 +30,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
   id,
   groupId,
   onUpdateRole,
+  currentRole,
 }) => {
   const [dialogState, setDialogState] = useState<{
     open: boolean;
@@ -46,7 +48,6 @@ const MemberCards: React.FC<MemberCardsProps> = ({
   // console.log(groupId)
 
   const makeAdmin = async () => {
-    
     if (!dialogState.id) {
       throw new Error("Missing user ID");
     }
@@ -55,7 +56,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       const response = await fetch(url, {
         method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ role: "ADMIN", id: dialogState.id }),
       });
@@ -68,7 +69,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
     } catch (error) {
       console.error("Error making user an admin:", error);
     }
-    
+
     handleCloseDialog();
   };
 
@@ -81,7 +82,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       const response = await fetch(url, {
         method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ role: "MEMBER", id: dialogState.id }),
       });
@@ -94,9 +95,9 @@ const MemberCards: React.FC<MemberCardsProps> = ({
     } catch (error) {
       console.error("Error demoting user from admin:", error);
     }
-    
+
     handleCloseDialog();
-  }
+  };
 
   const removeUser = async () => {
     if (!dialogState.id) {
@@ -107,7 +108,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       const response = await fetch(url, {
         method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ id: dialogState.id }),
       });
@@ -131,42 +132,41 @@ const MemberCards: React.FC<MemberCardsProps> = ({
 
   return (
     <div className="border flex flex-col justify-center items-center rounded shadow-lg relative py-10">
-      <Dialog open={dialogState.open} onOpenChange={handleCloseDialog}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="hover:bg-muted rounded absolute top-0 right-0 mt-2 mr-2">
-              <EllipsisVertical />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Manage User</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {
-              role === "MEMBER" ? (
+      {currentRole === "ADMIN" || currentRole === "CREATOR" ? (
+        <Dialog open={dialogState.open} onOpenChange={handleCloseDialog}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="hover:bg-muted rounded absolute top-0 right-0 mt-2 mr-2">
+                <EllipsisVertical />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Manage User</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {role === "MEMBER" ? (
                 <DropdownMenuItem onClick={() => handleOpenDialog("admin", id)}>
-              Make Admin
-            </DropdownMenuItem>
+                  Make Admin
+                </DropdownMenuItem>
               ) : role === "ADMIN" ? (
-                <DropdownMenuItem onClick={() => handleOpenDialog("member", id)}>
-              Make Member
-            </DropdownMenuItem>
-              ): 
-              null
-            }
-            {/* <DropdownMenuItem onClick={() => handleOpenDialog("admin", id)}>
-              Make Admin
-            </DropdownMenuItem> */}
-            <DropdownMenuItem onClick={() => handleOpenDialog("remove", id)}>
-              Remove from Group
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DialogContentTemplate
-          handleOpenDialog={handleCloseDialog}
-          content={dialogState.content}
-          onConfirm={getConfirmHandler()}
-        />
-      </Dialog>
+                <DropdownMenuItem
+                  onClick={() => handleOpenDialog("member", id)}
+                >
+                  Make Member
+                </DropdownMenuItem>
+              ) : null}
+              <DropdownMenuItem onClick={() => handleOpenDialog("remove", id)}>
+                Remove from Group
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DialogContentTemplate
+            handleOpenDialog={handleCloseDialog}
+            content={dialogState.content}
+            onConfirm={getConfirmHandler()}
+          />
+        </Dialog>
+      ) : null}
+
       <Avatar>
         <AvatarImage src={imageUrl} alt="avatar" />
         <AvatarFallback>U</AvatarFallback>
