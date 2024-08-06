@@ -18,7 +18,7 @@ export async function GET(
     if (userId !== authUserId.userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    console.log("fetching events for group: ", groupId);
+    // console.log("fetching events for group: ", groupId);
     const fetchedEvent = await prisma.groupEvent.findMany({
       where: {
         groupId: groupId,
@@ -45,7 +45,7 @@ export async function GET(
     if (!fetchedEvent) {
       return NextResponse.json({ message: "Event not found" }, { status: 404 });
     }
-    console.log("fetch: ",fetchedEvent);
+    // console.log("fetch: ",fetchedEvent);
     return NextResponse.json({ fetchedEvent });
   } catch (error) {
     console.error("Error fetching group:", error);
