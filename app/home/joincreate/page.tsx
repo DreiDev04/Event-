@@ -1,7 +1,9 @@
+
 import React from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import JoinInput from "./_components/JoinInput";
+
 
 const JoinCreate = () => {
   return (
@@ -15,8 +17,7 @@ const JoinCreate = () => {
           also create a new group below.
         </p>
         <div className="flex w-full max-w-sm items-center space-x-2">
-          <Input type="text" placeholder="enter code" />
-          <Button type="submit">Join</Button>
+          <JoinInput />
         </div>
       </div>
       <div className="flex flex-col gap-5">
