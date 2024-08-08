@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prismaClient";
 import { getAuth } from "@clerk/nextjs/server";
-
+import { revalidatePath } from "next/cache";
 
 export async function PUT(
   req: NextRequest,
@@ -9,7 +9,7 @@ export async function PUT(
 ) {
   try {
     const auth = getAuth(req);
-    const {groupId} = params;
+    const { groupId } = params;
 
     if (!auth || !auth.userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -33,22 +33,40 @@ export async function PUT(
     const user = await prisma.groupMember.findFirst({
       where: { groupId: groupId, userId: id },
     });
+
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    await prisma.groupMember.update({
-      where: { id: user.id },
-      data: { role: role },
+    const currentUserRole = await prisma.groupMember.findFirst({
+      where: { groupId: groupId, userId: auth.userId },
     });
 
+    if (currentUserRole?.role !== "ADMIN" && currentUserRole?.role !== "CREATOR") {
+      return NextResponse.json(
+        { message: "You do not have permission to remove this user" },
+        { status: 403 }
+      );
+    }
 
-    return NextResponse.json({ message: `User is now a ${role}` });
+    if (user.role === "CREATOR") {
+      return NextResponse.json(
+        { message: "You cannot remove the creator of the group" },
+        { status: 403 }
+      );
+    }
+
+    await prisma.groupMember.delete({
+      where: { id: user.id },
+    });
+
+    return NextResponse.json({ message: "User removed from group" });
   } catch (error) {
-    console.error("Error updating user role:", error);
+    console.error("Error removing user from group:", error);
     return NextResponse.json(
-      { message: `Failed to update user role: ${(error as Error).message}` },
+      { message: "An unexpected error occurred", error: (error as Error).message },
       { status: 500 }
     );
   }
 }
+

@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog } from "@/components/ui/dialog";
-import { revalidatePath } from "next/cache";
 
 type MemberCardsProps = {
   imageUrl: string;
@@ -45,7 +44,6 @@ const MemberCards: React.FC<MemberCardsProps> = ({
   const handleCloseDialog = () => {
     setDialogState({ open: false, content: "", id: null });
   };
-  // console.log(groupId)
 
   const makeAdmin = async () => {
     if (!dialogState.id) {
@@ -78,7 +76,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       throw new Error("Missing user ID");
     }
     try {
-      const url = `/api/manage-group/${groupId}`;
+      const url = `/api/manage-group/${groupId}/remove-user`;
       const response = await fetch(url, {
         method: "PUT",
         headers: {
@@ -104,18 +102,19 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       throw new Error("Missing user ID");
     }
     try {
-      const url = `/api/group/${groupId}/remove-user`;
+      const url = `/api/manage-group/${groupId}/remove-user`;
       const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: dialogState.id }),
+        body: JSON.stringify({ id: dialogState.id, role: role }),
       });
       if (!response.ok) {
         throw new Error("Failed to remove user from group");
       }
       const data = await response.json();
+      onUpdateRole(dialogState.id!, "REMOVED");
       console.log("User removed from group:", data);
     } catch (error) {
       console.error("Error removing user from group:", error);

@@ -3,19 +3,16 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { Calendar, MenuIcon } from "lucide-react";
 import CalendarUI from "@/app/_components/CalendarUI";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProfileCards from "./_components/ProfileCards";
 import MemberCards from "./_components/MemberCards";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
