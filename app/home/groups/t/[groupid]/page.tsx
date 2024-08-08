@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import CalendarUI from "@/app/_components/CalendarUI";
@@ -12,7 +13,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
@@ -20,9 +23,11 @@ const Page = () => {
   const params = useParams();
   const paramsID = params.groupid;
   const { user } = useUser();
+  const router = useRouter();
 
   const [response, setResponse] = useState<any>(null);
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openDialogManage, setOpenDialogManage] = useState<boolean>(false);
+  const [openDialogLeave, setOpenDialogLeave] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -57,10 +62,6 @@ const Page = () => {
 
   const currentRole = clientUser && clientUser[0].role;
 
-  const handleManageGroup = () => {
-    setOpenDialog((prev) => !prev);
-  };
-
   const updateMemberRole = (userId: string, newRole: string) => {
     setResponse((prevResponse: any) => {
       const updatedMembers = prevResponse.group.members.map((member: any) => {
@@ -69,10 +70,31 @@ const Page = () => {
         }
         return member;
       });
-      return { ...prevResponse, group: { ...prevResponse.group, members: updatedMembers } };
+      return {
+        ...prevResponse,
+        group: { ...prevResponse.group, members: updatedMembers },
+      };
     });
   };
 
+  const leaveGroup = async () => {
+    try {
+      if (!user?.id || !groupId) {
+        throw new Error("Missing user ID or group ID");
+      }
+      const url = `/api/group/${user?.id}/t/${groupId}/leave`;
+      const response = await fetch(url, { method: "POST" });
+      if (!response.ok) {
+        throw Error("Failed to leave group");
+      }
+      const data = await response.json();
+      console.log(data);
+      setOpenDialogManage((prev) => !prev);
+      router.push("/home");
+    } catch (error) {
+      console.error("Error leaving group:", error);
+    }
+  };
   return (
     <div>
       <div className="w-full p-3 flex justify-between items-center ">
@@ -93,19 +115,35 @@ const Page = () => {
               </p>
               <p className="text-sm">Group Id: {response.group.id}</p>
               <div className="flex gap-3">
-                <Button onClick={handleManageGroup}>
-                  <span>Manage Group</span>
+                <Button
+                  onClick={() => {
+                    setOpenDialogLeave((prev) => !prev);
+                  }}
+                >
+                  <span>Leave Group</span>
                 </Button>
-                <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                  <DialogContent
-                    onInteractOutside={(e) => {
-                      e.preventDefault();
-                    }}
-                  >
+                <Dialog
+                  open={openDialogLeave}
+                  onOpenChange={setOpenDialogLeave}
+                >
+                  <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Manage Group</DialogTitle>
+                      <DialogTitle>Leave Group</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to leave this group?
+                      </DialogDescription>
                     </DialogHeader>
-                    <Input />
+                    <DialogFooter>
+                      <Button
+                        onClick={() => {
+                          setOpenDialogLeave((prev) => !prev);
+                        }}
+                        variant={"outline"}
+                      >
+                        Cancel
+                      </Button>
+                      <Button onClick={leaveGroup}>Leave</Button>
+                    </DialogFooter>
                   </DialogContent>
                 </Dialog>
               </div>
