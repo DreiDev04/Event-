@@ -45,14 +45,6 @@ export default function LandingPage() {
           events with role-based access control, ensuring everyone stays on
           track.
         </p>
-        <br />
-        <Image
-          src={"/samples/preview.png"}
-          width={800}
-          height={800}
-          alt="Demo Image"
-        />
-        <br />
         <div className="flex space-x-4">
           <Button asChild>
             <Link href={"/home"} className="text-lg font-semibold">
@@ -60,6 +52,13 @@ export default function LandingPage() {
             </Link>
           </Button>
         </div>
+        <Image
+          src={"/samples/preview.png"}
+          width={1000}
+          height={1000}
+          alt="Demo Image"
+          className="shadow-lg rounded-md border my-14"
+        />
       </header>
 
       <section className="bg-accent py-10 px-8 flex flex-col">

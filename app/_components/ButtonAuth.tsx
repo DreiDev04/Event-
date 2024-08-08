@@ -11,9 +11,9 @@ const ButtonAuth = () => {
   return (
     <>
       {userId ? (
-        <>
+        <div className="text-white">
           <SignOutButton />
-        </>
+        </div>
       ) : (
         <>
           <Button asChild variant={"link"}>
