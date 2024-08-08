@@ -98,7 +98,7 @@ const Page = () => {
   return (
     <div>
       <div className="w-full p-3 flex justify-between items-center ">
-        <h1>{response?.group.name} </h1>
+        <h1 className="font-bold text-lg">{response?.group.name} </h1>
       </div>
       <CalendarUI groupId={groupId} isRO={isUserRO} />
       <br />
