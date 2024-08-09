@@ -1,14 +1,44 @@
-import { create } from 'zustand'
+import { Role } from "@prisma/client";
+import { create } from "zustand";
 
-type Store = {
-  count: number
-  inc: () => void
+interface filteredGroupResponse {
+  creator: {
+    id: string;
+    name: string | null;
+    imageUrl: string | null;
+  };
+  description: string;
+  id: string;
+  member: {
+    role: "ADMIN" | "MEMBER" | "CREATOR";
+    user: {
+      id: string;
+      name: string | null;
+      imageUrl: string | null;
+    };
+  }[];
+  name: string;
 }
 
-const useStore = create<Store>()((set) => ({
-  count: 1,
-  inc: () => set((state) => ({ count: state.count + 1 })),
-}))
+type Store = {
+  group: filteredGroupResponse;
+  setGroup: (data: filteredGroupResponse) => void;
+};
+
+export const useStore = create<Store>()((set) => ({
+  group: {
+    creator: {
+      id: "",
+      name: "",
+      imageUrl: "",
+    },
+    description: "",
+    id: "",
+    member: [],
+    name: "",
+  },
+  setGroup: (data) => set({ group: data }),
+}));
 
 // function Counter() {
 //   const { count, inc } = useStore()

@@ -18,7 +18,7 @@ type MemberCardsProps = {
   role: string;
   id: string;
   groupId: string | undefined;
-  onUpdateRole: (userId: string, newRole: string) => void;
+  onUpdateRole?: (userId: string, newRole: string) => void;
   currentRole?: "ADMIN" | "MEMBER" | "CREATOR";
 };
 
@@ -63,7 +63,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       }
       const data = await response.json();
       console.log("User is now an admin:", data);
-      onUpdateRole(dialogState.id!, "ADMIN");
+      // onUpdateRole(dialogState.id!, "ADMIN");
     } catch (error) {
       console.error("Error making user an admin:", error);
     }
@@ -89,7 +89,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       }
       const data = await response.json();
       console.log("User is now a member:", data);
-      onUpdateRole(dialogState.id!, "MEMBER");
+      // onUpdateRole(dialogState.id!, "MEMBER");
     } catch (error) {
       console.error("Error demoting user from admin:", error);
     }
@@ -114,7 +114,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
         throw new Error("Failed to remove user from group");
       }
       const data = await response.json();
-      onUpdateRole(dialogState.id!, "REMOVED");
+      // onUpdateRole(dialogState.id!, "REMOVED");
       console.log("User removed from group:", data);
     } catch (error) {
       console.error("Error removing user from group:", error);

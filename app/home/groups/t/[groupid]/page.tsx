@@ -15,10 +15,11 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 
 import { Role } from "@prisma/client";
+import { useStore } from "@/components/store/store";
+
 
 interface filteredGroupResponse{
   creator: {
@@ -44,8 +45,8 @@ const Page = () => {
   const paramsID = params.groupid;
   const { user } = useUser();
   const router = useRouter();
-
-  const [response, setResponse] = useState<filteredGroupResponse>();
+  const { group, setGroup } = useStore();
+  // const [data, setResponse] = useState<filteredGroupResponse>();
   const [openDialogManage, setOpenDialogManage] = useState<boolean>(false);
   const [openDialogLeave, setOpenDialogLeave] = useState<boolean>(false);
 
@@ -62,7 +63,7 @@ const Page = () => {
         }
         const data = await response.json();
         
-        setResponse(data.filteredGroup);
+        setGroup(data.filteredGroup);
       } catch (error) {
         console.error("Error fetching group:", error);
       }
@@ -72,33 +73,29 @@ const Page = () => {
     }
   }, [params]);
 
-  console.log(response);
-
-  const groupId = response?.id;
-
-  
-  const clientUser = response?.member?.filter(
+  const groupId = group?.id;
+  const clientUser = group?.member?.filter(
     (member: { user: { id: string } }) => {
       return member.user.id === user?.id;
     }
   ) ;
-  const isUserRO = clientUser && clientUser[0].role === "MEMBER" ? true : false;
-  const currentRole = clientUser && clientUser[0].role;
+  const isUserRO = clientUser && clientUser[0]?.role === "MEMBER" ? true : false;
+  const currentRole = clientUser && clientUser[0]?.role;
 
-  const updateMemberRole = (userId: string, newRole: string) => {
-    setResponse((prevResponse: any) => {
-      const updatedMembers = prevResponse.group.members.map((member: any) => {
-        if (member.user.id === userId) {
-          return { ...member, role: newRole };
-        }
-        return member;
-      });
-      return {
-        ...prevResponse,
-        group: { ...prevResponse.group, members: updatedMembers },
-      };
-    });
-  };
+  // const updateMemberRole = (userId: string, newRole: string) => {
+  //   setResponse((prevResponse: any) => {
+  //     const updatedMembers = prevResponse.group.members.map((member: any) => {
+  //       if (member.user.id === userId) {
+  //         return { ...member, role: newRole };
+  //       }
+  //       return member;
+  //     });
+  //     return {
+  //       ...prevResponse,
+  //       group: { ...prevResponse.group, members: updatedMembers },
+  //     };
+  //   });
+  // };
 
   const leaveGroup = async () => {
     try {
@@ -123,23 +120,24 @@ const Page = () => {
   return (
     <div>
       <div className="w-full p-3 flex justify-between items-center ">
-        <h1 className="font-bold text-lg">{response?.name} </h1>
+        <h1 className="font-bold text-lg">{group?.name} </h1>
       </div>
       <CalendarUI groupId={groupId} isRO={isUserRO} />
       <br />
       <br />
       <br />
       <div className=" border p-10">
-        {response ? (
+        {group ? (
           <div className=" grid grid-cols-3 gap-4">
             <div className="border rounded-md md:col-span-2 col-span-3 min-h-36 p-5 gap-2 flex flex-col">
-              <h1 className="text-4xl font-semibold">{response.name}</h1>
-              <p className="text-lg">{response.description}</p>
+              <h1 className="text-4xl font-semibold">{group.name}</h1>
+              <p className="text-lg">{group.description}</p>
               <p className="text-sm">
-                Members: {response.member?.length}
+                Members: {group.member?.length}
               </p>
-              <p className="text-sm">Group Id: {response.id}</p>
+              <p className="text-sm">Group Id: {group.id}</p>
               <div className="flex gap-3">
+
                 <Button
                   onClick={() => {
                     setOpenDialogLeave((prev) => !prev);
@@ -147,6 +145,7 @@ const Page = () => {
                 >
                   <span>Leave Group</span>
                 </Button>
+
                 <Dialog
                   open={openDialogLeave}
                   onOpenChange={setOpenDialogLeave}
@@ -175,18 +174,18 @@ const Page = () => {
             </div>
             <div className="col-span-3 md:col-span-1 min-h-36">
               <ProfileCards
-                imageUrl={response.creator?.imageUrl}
-                name={response.creator?.name}
+                imageUrl={group.creator?.imageUrl}
+                name={group.creator?.name}
                 role={"CREATOR"}
               />
             </div>
             <div className="border rounded-md col-span-3 min-h-36 p-5">
               <h1 className="text-lg">Admins</h1>
               <div className="grid grid-cols-5 gap-3">
-                {response.member?.some(
+                {group.member?.some(
                   (member: any) => member.role === "ADMIN"
                 ) ? (
-                  response.member?.map((member: any) =>
+                  group.member?.map((member: any) =>
                     member.role === "ADMIN" ? (
                       <MemberCards
                         groupId={groupId}
@@ -195,7 +194,7 @@ const Page = () => {
                         name={member?.user.name}
                         role={member?.role}
                         key={member?.user.id}
-                        onUpdateRole={updateMemberRole}
+                        // onUpdateRole={updateMemberRole}
                         currentRole={currentRole}
                       />
                     ) : null
@@ -210,10 +209,10 @@ const Page = () => {
             <div className="border rounded-md col-span-3 min-h-36 p-5">
               <h1 className="text-lg mb-2">Members</h1>
               <div className="grid grid-cols-5 gap-3">
-                {response.member?.some(
+                {group.member?.some(
                   (member: any) => member.role === "MEMBER"
                 ) ? (
-                  response.member?.map((member: any) =>
+                  group.member?.map((member: any) =>
                     member.role === "MEMBER" ? (
                       <MemberCards
                         groupId={groupId}
@@ -222,7 +221,7 @@ const Page = () => {
                         name={member?.user.name}
                         role={member?.role}
                         key={member?.user.id}
-                        onUpdateRole={updateMemberRole}
+                        // onUpdateRole={updateMemberRole}
                         currentRole={currentRole}
                       />
                     ) : null
