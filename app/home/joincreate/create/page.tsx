@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,6 +29,7 @@ export const formSchemaCreteGroup = z.object({
 const CreateGroup = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchemaCreteGroup>>({
     resolver: zodResolver(formSchemaCreteGroup),
@@ -38,6 +39,7 @@ const CreateGroup = () => {
     },
   });
   async function onSubmit(values: z.infer<typeof formSchemaCreteGroup>) {
+    setLoading(true);
     try {
       const response = await fetch("/api/create-group", {
         method: "POST",
@@ -56,13 +58,15 @@ const CreateGroup = () => {
         throw new Error(data.message);
       }
       router.push(`/home/groups/t/${data.groupId}`);
-    } catch (error : any) {
+    } catch (error: any) {
       console.error("Failed to create group:", error);
       toast({
         variant: "destructive",
         title: "Something went wrong.",
         description: error.message || "An unexpected error occurred.",
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -76,7 +80,7 @@ const CreateGroup = () => {
             <FormItem>
               <FormLabel>Group Name</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} autoComplete="off" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -89,13 +93,13 @@ const CreateGroup = () => {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} autoComplete="off" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={loading}>Submit</Button>
       </form>
     </Form>
   );
