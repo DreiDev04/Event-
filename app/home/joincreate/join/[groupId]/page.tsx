@@ -142,6 +142,7 @@ const InviteComponent: React.FC<InviteProps> = ({ group, groupId }) => {
           Join Group
         </Button>
       </form>
+      
     </div>
   );
 };

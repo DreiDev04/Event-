@@ -3,30 +3,29 @@ import React from "react";
 import Link from "next/link";
 
 type GroupSectionProps = {
-  groups: Group[];
+  groups: Group | null;
 };
 
 const GroupSection = ({ groups }: GroupSectionProps) => {
-  // console.log("Groups:", groups);
+  if (!groups) {
+    return <div className="p-3">No groups available</div>;
+  }
+  const groupsArr = Array.isArray(groups) ? groups : [groups];
 
   return (
     <div className="flex flex-col">
-      {groups.length > 0 ? (
-          groups.map((group) => (
-            <Link
-              key={group.id}
-              className="p-3 hover:bg-muted rounded-sm border-b"
-              href={`/home/groups/t/${group.id}`}
-            >
-              <h1 className="font-bold">{group.name}</h1>
-              <p className="text-sm line-clamp-1">
-                {group.description || "No description available"}
-              </p>
-            </Link>
-          ))
-        ) : (
-          <div className="p-3">No groups available</div>
-        )}
+      {groupsArr.map((group: Group) => (
+        <Link
+          key={group.id}
+          className="p-3 hover:bg-muted rounded-sm border-b"
+          href={`/home/groups/t/${group.id}`}
+        >
+          <h1 className="font-bold">{group.name}</h1>
+          <p className="text-sm line-clamp-1">
+            {group.description || "No description available"}
+          </p>
+        </Link>
+      ))}
     </div>
   );
 };

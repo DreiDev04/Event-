@@ -4,19 +4,13 @@ import { getAuth } from "@clerk/nextjs/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params: { userId } }: { params: { userId: string } }
 ) {
   try {
-    const authUserId = getAuth(req);
-    const { userId } = params;
+    const auth = getAuth(req);
 
-    // console.log("Params:", userId);
-    // console.log("User ID:", userId);
-
-    if (!authUserId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-    if (authUserId.userId !== userId) {
+    if (!auth || !auth.userId || auth.userId !== userId) {
+      console.warn(`Unauthorized access attempt by user: ${auth?.userId}`);
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -30,15 +24,20 @@ export async function GET(
       },
     });
 
-    if (!userGroups) {
-      return NextResponse.json({ message: "No Groups found" }, { status: 404 });
-    }
+    const filteredGroups = userGroups.map((group) => ({
+      description: group.description,
+      id: group.id,
+      name: group.name,
+    }));
 
-    return NextResponse.json({ userGroups });
+    return NextResponse.json(
+      { message: "User's group found", data: filteredGroups },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching user's group:", error);
     return NextResponse.json(
-      { message: "Failed to fetch user's group", error: error as Error },
+      { message: "Failed to fetch user's group", error: (error as Error).message },
       { status: 500 }
     );
   }

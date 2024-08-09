@@ -10,8 +10,13 @@ import { Group } from "@prisma/client";
 import GroupSection from "./_components/GroupSection";
 import Loader from "@/components/loaders/Loaders";
 
+interface GroupResponse {
+  message: string;
+  data: Group;
+}
+
 const GroupLayout = ({ children }: { children?: React.ReactNode }) => {
-  const [userGroups, setUserGroups] = useState<Group[]>([]);
+  const [userGroups, setUserGroups] = useState<Group | null>(null);
   const { user } = useUser();
 
   if (!user) {
@@ -26,12 +31,9 @@ const GroupLayout = ({ children }: { children?: React.ReactNode }) => {
         if (!response.ok) {
           throw new Error("Failed to fetch groups");
         }
-        const data = await response.json();
-        if (Array.isArray(data.userGroups)) {
-          setUserGroups(data.userGroups);
-        } else {
-          console.error("Fetched data is not an array:", data);
-        }
+        const data: GroupResponse = await response.json();
+        console.log(data);
+        setUserGroups(data.data)
       } catch (error) {
         console.error("Error fetching groups:", error);
       }
@@ -55,9 +57,6 @@ const GroupLayout = ({ children }: { children?: React.ReactNode }) => {
           <GroupSection groups={userGroups} />
         </div>
       </div>
-      {/* <div className="h-screen">
-        
-      </div> */}
     </>
   );
 };
