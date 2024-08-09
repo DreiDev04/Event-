@@ -1,24 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prismaClient";
 import { getAuth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 
 export async function GET(
   req: NextRequest,
   { params: { groupId } }: { params: { groupId: string } }
 ) {
   try {
-    const { userId } = getAuth(req);
-    if (!userId) {
+    const auth = getAuth(req);
+    if (!auth || !auth.userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+
     const group = await prisma.group.findUnique({
       where: {
         id: groupId,
       },
       include: {
         members: true,
-      }
+      },
     });
     if (!group) {
       return NextResponse.json({ message: "Group not found" }, { status: 404 });
@@ -31,61 +31,63 @@ export async function GET(
     };
 
     return NextResponse.json(
-      { message: "Group found", filteredGroup },
+      { data: filteredGroup, message: "Group found" },
       { status: 200 }
     );
   } catch (error) {
+    console.error('Error joining group:', error); // Log the error for debugging
     return NextResponse.json(
-      { message: "", error: (error as Error).message },
+      { message: "An unexpected error occurred", error: (error as Error) },
       { status: 500 }
     );
   }
 }
 
-
-export async function POST(req: NextRequest, { params: { groupId } }: { params: { groupId: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params: { groupId } }: { params: { groupId: string } }
+) {
   try {
     const { userId } = getAuth(req);
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const isUserInDB = await prisma.user.findUnique({
-      where: {
-        id: userId
-      }
-    })
+
+    const [isUserInDB, isUserAlreadyInGroup, group] = await Promise.all([
+      prisma.user.findUnique({ where: { id: userId } }),
+      prisma.groupMember.findFirst({
+        where: { groupId: groupId, userId: userId },
+      }),
+      prisma.group.findUnique({ where: { id: groupId } }),
+    ]);
+
     if (!isUserInDB) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
-    const isUserAlreadyInGroup = await prisma.groupMember.findFirst({
-      where: {
-        groupId: groupId,
-        userId: userId
-      }
-    });
+
     if (isUserAlreadyInGroup) {
-      return NextResponse.json({ message: "User already in group" }, { status: 400 });
+      return NextResponse.json(
+        { message: "User already in group" },
+        { status: 400 }
+      );
     }
 
-    const group = await prisma.group.findUnique({
-      where: {
-        id: groupId
-      }
-    });
     if (!group) {
-      return NextResponse.json({ message: "Group not found" }, { status: 404 });
+      return NextResponse.json({ message: "Group not found" }, { status: 405 });
     }
 
     const newMember = await prisma.groupMember.create({
       data: {
         userId: userId,
         groupId: groupId,
-        role: "MEMBER"
-      }
+        role: "MEMBER",
+      },
     });
-    
-    return NextResponse.json({ message: "User joined group", newMember }, { status: 200 });
 
+    return NextResponse.json(
+      { message: "User joined group", newMember },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Failed", error: (error as Error).message },

@@ -5,11 +5,10 @@ import { revalidatePath } from "next/cache";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { groupId: string } }
+  { params: { groupId } }: { params: { groupId: string } }
 ) {
   try {
     const auth = getAuth(req);
-    const { groupId } = params;
 
     if (!auth || !auth.userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

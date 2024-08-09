@@ -5,8 +5,8 @@ import Loaders from "@/components/loaders/Loaders";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from 'next/navigation'
-
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Group {
   id: string;
@@ -17,14 +17,21 @@ interface Group {
 
 interface GroupResponse {
   message: string;
-  filteredGroup: Group;
+  data: Group;
 }
+interface ErrorProps {
+  message: string;
+  status: number;
+}
+
+const ErrorMessage = "Please contact the developer.";
 
 const Page = () => {
   const { groupId } = useParams();
   const [groupInfo, setGroupInfo] = useState<Group | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorProps>();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -34,8 +41,13 @@ const Page = () => {
           throw new Error("Group not found");
         }
         const data: GroupResponse = await res.json();
-        setGroupInfo(data.filteredGroup);
+        setGroupInfo(data.data);
       } catch (err: any) {
+        toast({
+          variant: "destructive",
+          title: "Something went wrong.",
+          description: err.message,
+        });
         setError(err.message);
       } finally {
         setLoading(false);
@@ -54,7 +66,19 @@ const Page = () => {
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="h-full grid place-items-center relative">
+        <Button className="absolute top-2 left-2" asChild>
+          <Link href="/home/joincreate">
+            <ArrowLeft />
+            Back
+          </Link>
+        </Button>
+        <div className="min-w-80 border py-10 px-5 rounded-md flex flex-col gap-2 justify-center items-center shadow-lg bg-card">
+          <h1 className="text-3xl font-bold">Group not found</h1>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -76,8 +100,8 @@ type InviteProps = {
 };
 
 const InviteComponent: React.FC<InviteProps> = ({ group, groupId }) => {
-  const router = useRouter()
-
+  const router = useRouter();
+  const { toast } = useToast();
 
   const joinGroup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,13 +113,22 @@ const InviteComponent: React.FC<InviteProps> = ({ group, groupId }) => {
         },
       });
       const result = await res.json();
-      if (!res.ok) {
-        throw new Error(result.message || "Failed to join group");
-      }
-      router.push(`/home/groups/t/${groupId}`)
 
+      if (!res.ok) {
+        toast({
+          variant: "destructive",
+          title: "Something went wrong.",
+          description: result.message || "An unexpected error occurred.",
+        });
+        return; // Stop further execution
+      }
+      router.push(`/home/groups/t/${groupId}`);
     } catch (error: any) {
-      throw new Error(error.message);
+      toast({
+        variant: "destructive",
+        title: "Something went wrong.",
+        description: error.message || "An unexpected error occurred.",
+      });
     }
   };
 

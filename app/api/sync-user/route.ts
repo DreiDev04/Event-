@@ -16,23 +16,20 @@ export async function GET(req: NextRequest) {
   
 
   try {
-    // Check if the user already exists in your database
     const existingUser = await prisma.user.findUnique({
-      where: { id: user.id }, // Clerk user ID
+      where: { id: user.id },
     });
 
     if (!existingUser) {
-      // Create a new user record in your database
       await prisma.user.create({
         data: {
-          id: user.id, // Clerk user ID
+          id: user.id,
           email: user.emailAddresses[0].emailAddress || "",
           name: user.fullName || "",
           imageUrl: user.imageUrl || "",
         },
       });
     } else {
-      // Optionally, update existing user record
       await prisma.user.update({
         where: { id: user.id },
         data: {
