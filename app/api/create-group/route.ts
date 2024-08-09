@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prismaClient";
 import { getAuth } from "@clerk/nextjs/server";
+import { group } from "console";
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,10 +35,12 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+    const groupId = newGroup.id;
 
     return NextResponse.json(
       {
         message: "Group created successfully",
+        groupId: groupId
       },
       { status: 201 }
     );

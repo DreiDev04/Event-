@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export const formSchemaCreteGroup = z.object({
   group_name: z.string().min(3, {
@@ -26,12 +27,13 @@ export const formSchemaCreteGroup = z.object({
 });
 
 const CreateGroup = () => {
+  const router = useRouter();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchemaCreteGroup>>({
     resolver: zodResolver(formSchemaCreteGroup),
     defaultValues: {
-      group_name: "",
+      group_name: "Untitled Group",
       desc: "",
     },
   });
@@ -53,6 +55,7 @@ const CreateGroup = () => {
         });
         throw new Error(data.message);
       }
+      router.push(`/home/groups/t/${data.groupId}`);
     } catch (error : any) {
       console.error("Failed to create group:", error);
       toast({
