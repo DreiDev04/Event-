@@ -3,18 +3,17 @@ import React from "react";
 import Link from "next/link";
 
 type GroupSectionProps = {
-  groups: Group | null;
+  groups: Group[];
 };
 
 const GroupSection = ({ groups }: GroupSectionProps) => {
   if (!groups) {
     return <div className="p-3">No groups available</div>;
   }
-  const groupsArr = Array.isArray(groups) ? groups : [groups];
 
   return (
     <div className="flex flex-col">
-      {groupsArr.map((group: Group) => (
+      {groups.map((group: Group) => (
         <Link
           key={group.id}
           className="p-3 hover:bg-muted rounded-sm border-b"
