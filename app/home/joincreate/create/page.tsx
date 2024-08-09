@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
 export const formSchemaCreteGroup = z.object({
   group_name: z.string().min(3, {
@@ -25,6 +26,8 @@ export const formSchemaCreteGroup = z.object({
 });
 
 const CreateGroup = () => {
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof formSchemaCreteGroup>>({
     resolver: zodResolver(formSchemaCreteGroup),
     defaultValues: {
@@ -42,14 +45,22 @@ const CreateGroup = () => {
         body: JSON.stringify(values),
       });
       const data = await response.json();
-      console.log(data);
       if (!response.ok) {
+        toast({
+          variant: "destructive",
+          title: "Something went wrong.",
+          description: data.message || "An unexpected error occurred.",
+        });
         throw new Error(data.message);
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error : any) {
+      console.error("Failed to create group:", error);
+      toast({
+        variant: "destructive",
+        title: "Something went wrong.",
+        description: error.message || "An unexpected error occurred.",
+      });
     }
-    console.log("Values:",values);
   }
 
   return (

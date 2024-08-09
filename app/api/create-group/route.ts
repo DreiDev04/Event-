@@ -4,35 +4,47 @@ import { getAuth } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { group_name, desc } = await req.json();
-    const { userId } = getAuth(req);
-
-    if (!userId) {
+    const auth = getAuth(req);
+    if (!auth || !auth.userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    //TODO: add authentication check
+
+    const { group_name, desc } = await req.json();
+
+    // Input validation
+    if (
+      !group_name ||
+      typeof group_name !== "string" ||
+      !desc ||
+      typeof desc !== "string"
+    ) {
+      return NextResponse.json({ message: "Invalid input" }, { status: 400 });
+    }
+
     const newGroup = await prisma.group.create({
       data: {
         name: group_name,
         description: desc,
-        creatorId: userId,
+        creatorId: auth.userId,
         members: {
           create: {
-            userId: userId,
-            role: 'CREATOR',
+            userId: auth.userId,
+            role: "CREATOR",
           },
         },
       },
     });
 
-    return NextResponse.json({
-      message: "Group created successfully",
-      group: newGroup,
-    });
+    return NextResponse.json(
+      {
+        message: "Group created successfully",
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating group:", error);
     return NextResponse.json(
-      { message: "Failed to create group", error: error as Error },
+      { message: "Failed to create group", error: (error as Error).message },
       { status: 500 }
     );
   }
