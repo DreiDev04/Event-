@@ -17,7 +17,7 @@ type MemberCardsProps = {
   name: string;
   role: string;
   id: string;
-  groupId: string;
+  groupId: string | undefined;
   onUpdateRole: (userId: string, newRole: string) => void;
   currentRole?: "ADMIN" | "MEMBER" | "CREATOR";
 };

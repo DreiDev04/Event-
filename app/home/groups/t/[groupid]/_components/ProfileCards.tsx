@@ -3,8 +3,8 @@ import Image from "next/image";
 import React from "react";
 
 type ProfileCardsProps = {
-  imageUrl: string;
-  name: string;
+  imageUrl: string | null;
+  name: string | null;
   role: string;
 };
 const ProfileCards: React.FC<ProfileCardsProps> = ({
@@ -14,8 +14,11 @@ const ProfileCards: React.FC<ProfileCardsProps> = ({
 }) => {
   return (
     <div className="border flex flex-col justify-center items-center rounded shadow-lg py-10 ">
+      {
+        //TODO: Add the Avatar component here
+      }
       <Image
-        src={imageUrl}
+        src={imageUrl || "/icons/user.png"}
         alt="profile"
         width={100}
         height={100}
