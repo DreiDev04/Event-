@@ -38,17 +38,14 @@ export async function GET(
       creator: { id: group.creator.id, name: group.creator.name, imageUrl: group.creator.imageUrl },
       description: group.description,
       id: group.id,
-      member: [
-        {
-          role: group.members[0].role,
-          user: {
-            id: group.members[0].user.id,
-            name: group.members[0].user.name,
-            imageUrl: group.members[0].user.imageUrl,
-          },
+      member: group.members.map(member => ({
+        role: member.role,
+        user: {
+          id: member.user.id,
+          name: member.user.name,
+          imageUrl: member.user.imageUrl,
         },
-      ],
-      
+      })),
       name: group.name,
     };
     

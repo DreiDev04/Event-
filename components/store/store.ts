@@ -23,6 +23,7 @@ interface filteredGroupResponse {
 type Store = {
   group: filteredGroupResponse;
   setGroup: (data: filteredGroupResponse) => void;
+  updateMemberRole: (userId: string, newRole: "ADMIN" | "MEMBER" | "CREATOR") => void;
 };
 
 export const useStore = create<Store>()((set) => ({
@@ -38,14 +39,19 @@ export const useStore = create<Store>()((set) => ({
     name: "",
   },
   setGroup: (data) => set({ group: data }),
+  updateMemberRole: (userId, newRole) => {
+    set((prevResponse) => {
+      const updatedMembers = prevResponse.group.member.map((member) => {
+        if (member.user.id === userId) {
+          return { ...member, role: newRole };
+        }
+        return member;
+      });
+      return {
+        ...prevResponse,
+        group: { ...prevResponse.group, member: updatedMembers },
+      };
+    });
+  },
 }));
 
-// function Counter() {
-//   const { count, inc } = useStore()
-//   return (
-//     <div>
-//       <span>{count}</span>
-//       <button onClick={inc}>one up</button>
-//     </div>
-//   )
-// }

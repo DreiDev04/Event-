@@ -21,32 +21,12 @@ import { Role } from "@prisma/client";
 import { useStore } from "@/components/store/store";
 
 
-interface filteredGroupResponse{
-  creator: {
-      id: string;
-      name: string | null;
-      imageUrl: string | null;
-  };
-  description: string;
-  id: string;
-  member: {
-      role: Role;
-      user: {
-          id: string;
-          name: string | null;
-          imageUrl: string | null;
-      };
-  }[];
-  name: string;
-}
-
 const Page = () => {
   const params = useParams();
   const paramsID = params.groupid;
   const { user } = useUser();
   const router = useRouter();
-  const { group, setGroup } = useStore();
-  // const [data, setResponse] = useState<filteredGroupResponse>();
+  const { group, setGroup} = useStore();
   const [openDialogManage, setOpenDialogManage] = useState<boolean>(false);
   const [openDialogLeave, setOpenDialogLeave] = useState<boolean>(false);
 
@@ -62,7 +42,7 @@ const Page = () => {
           throw new Error("Failed to fetch group");
         }
         const data = await response.json();
-        
+        // console.log(data.group);
         setGroup(data.filteredGroup);
       } catch (error) {
         console.error("Error fetching group:", error);
@@ -73,6 +53,7 @@ const Page = () => {
     }
   }, [params]);
 
+  console.log("Group: ", group);
   const groupId = group?.id;
   const clientUser = group?.member?.filter(
     (member: { user: { id: string } }) => {
@@ -116,6 +97,7 @@ const Page = () => {
     }
   };
 
+  // console.log(group);
   
   return (
     <div>
@@ -145,7 +127,6 @@ const Page = () => {
                 >
                   <span>Leave Group</span>
                 </Button>
-
                 <Dialog
                   open={openDialogLeave}
                   onOpenChange={setOpenDialogLeave}
@@ -170,6 +151,7 @@ const Page = () => {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
+
               </div>
             </div>
             <div className="col-span-3 md:col-span-1 min-h-36">
@@ -179,6 +161,7 @@ const Page = () => {
                 role={"CREATOR"}
               />
             </div>
+            
             <div className="border rounded-md col-span-3 min-h-36 p-5">
               <h1 className="text-lg">Admins</h1>
               <div className="grid grid-cols-5 gap-3">

@@ -11,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog } from "@/components/ui/dialog";
+import { useStore } from "@/components/store/store";
+
 
 type MemberCardsProps = {
   imageUrl: string;
@@ -36,6 +38,8 @@ const MemberCards: React.FC<MemberCardsProps> = ({
     content: string;
     id: string | null;
   }>({ open: false, content: "", id: null });
+
+  const { updateMemberRole } = useStore();
 
   const handleOpenDialog = (content: string, id: string) => {
     setDialogState({ open: true, content, id });
@@ -64,6 +68,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       const data = await response.json();
       console.log("User is now an admin:", data);
       // onUpdateRole(dialogState.id!, "ADMIN");
+      updateMemberRole(dialogState.id!, "ADMIN");
     } catch (error) {
       console.error("Error making user an admin:", error);
     }
@@ -90,6 +95,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       const data = await response.json();
       console.log("User is now a member:", data);
       // onUpdateRole(dialogState.id!, "MEMBER");
+      updateMemberRole(dialogState.id!, "MEMBER");
     } catch (error) {
       console.error("Error demoting user from admin:", error);
     }
@@ -115,6 +121,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       }
       const data = await response.json();
       // onUpdateRole(dialogState.id!, "REMOVED");
+      
       console.log("User removed from group:", data);
     } catch (error) {
       console.error("Error removing user from group:", error);
