@@ -7,7 +7,7 @@ import { IconMenu2, IconX } from "@tabler/icons-react";
 
 interface Links {
   label: string;
-  href: string;
+  href?: string;
   icon: React.JSX.Element | React.ReactNode;
 }
 
@@ -163,6 +163,7 @@ export const SidebarLink = ({
   link?: Links;
   className?: string;
   props?: LinkProps;
+  onClick?: () => void;
 }) => {
   const { open, animate } = useSidebar();
   return (

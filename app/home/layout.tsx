@@ -43,7 +43,9 @@ export default function HomeLayout({
             </div>
           </div>
           <div>
-            <SignOutButton />
+            {/* <SignOutButton /> */}
+            
+
             <SidebarLink
               link={{
                 label: `${user.fullName ? user.fullName : "<no username>"}`,
@@ -59,6 +61,16 @@ export default function HomeLayout({
                 ),
               }}
             />
+            <SignOutButton redirectUrl="/">
+              <SidebarLink
+                link={{
+                  label: "Logout",
+                  icon: (
+                    <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                  ),
+                }}
+              />
+            </SignOutButton>
           </div>
         </SidebarBody>
       </Sidebar>
