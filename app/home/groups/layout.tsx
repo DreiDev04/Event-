@@ -16,10 +16,13 @@ const GroupLayout = ({ children }: { children?: React.ReactNode }) => {
   const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
   const { user } = useUser();
   
+  if (!user) {
+    throw new Error("User not found");
+  }
   useEffect(() => {
     const fetchGroup = async () => {
       try {
-        const response = await fetch(`/api/group/${user?.id}`);
+        const response = await fetch(`/api/group/${user.id}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch groups");
