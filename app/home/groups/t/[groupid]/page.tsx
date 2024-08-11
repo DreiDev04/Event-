@@ -143,7 +143,7 @@ const Page = () => {
                         />
                       </div>
                       <Button type="submit" size="sm" className="px-3" onClick={()=>{
-                        navigator.clipboard.writeText("http://localhost:3000/home/joincreate/join/" + group.id)
+                        navigator.clipboard.writeText("https://eventplusplus.vercel.app/home/joincreate/join/" + group.id)
                         toast({
                           title: "Copied to clipboard",
                           description: "You can now share the link with others.",
