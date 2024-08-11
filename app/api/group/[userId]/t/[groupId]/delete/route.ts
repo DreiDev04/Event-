@@ -32,7 +32,7 @@ export async function DELETE(
     if (!group) {
       return NextResponse.json({ message: "Group not found" }, { status: 404 });
     }
-
+    await prisma.groupEvent.deleteMany({ where: { groupId } });
     await prisma.groupMember.deleteMany({ where: { groupId } });
     await prisma.group.delete({ where: { id: groupId } });
 

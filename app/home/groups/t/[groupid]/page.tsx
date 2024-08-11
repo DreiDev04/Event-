@@ -110,7 +110,7 @@ const Page = () => {
       <br />
       <br />
       <br />
-      <div className=" border p-10">
+      <div className=" md:p-10 p-5">
         {group ? (
           <div className=" grid grid-cols-3 gap-4">
             <div className="border rounded-md md:col-span-2 col-span-3 min-h-36 p-5 gap-2 flex flex-col">
@@ -138,17 +138,29 @@ const Page = () => {
                         </Label>
                         <Input
                           id="link"
-                          defaultValue={"https://eventplusplus.vercel.app/home/joincreate/join/" + group.id}
+                          defaultValue={
+                            "https://eventplusplus.vercel.app/home/joincreate/join/" +
+                            group.id
+                          }
                           readOnly
                         />
                       </div>
-                      <Button type="submit" size="sm" className="px-3" onClick={()=>{
-                        navigator.clipboard.writeText("https://eventplusplus.vercel.app/home/joincreate/join/" + group.id)
-                        toast({
-                          title: "Copied to clipboard",
-                          description: "You can now share the link with others.",
-                        })
-                      }}>
+                      <Button
+                        type="submit"
+                        size="sm"
+                        className="px-3"
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            "https://eventplusplus.vercel.app/home/joincreate/join/" +
+                              group.id
+                          );
+                          toast({
+                            title: "Copied to clipboard",
+                            description:
+                              "You can now share the link with others.",
+                          });
+                        }}
+                      >
                         <span className="sr-only">Copy</span>
                         <Copy className="h-4 w-4" />
                       </Button>
@@ -164,21 +176,10 @@ const Page = () => {
                 </Dialog>
                 {currentRole === "CREATOR" ? (
                   <>
-                    {/* <Button
-                      onClick={() => {
-                        setOpenDialogDelete((prev) => !prev);
-                      }}
-                      variant={"destructive"}
-                    >
-                      <span>Delete Group</span>
-                    </Button> */}
-                    <Dialog
-                      // open={openDialogDelete}
-                      // onOpenChange={setOpenDialogDelete}
-                    >
+                    <Dialog>
                       <DialogTrigger asChild>
-                    <Button variant="destructive" >Delete Group</Button>
-                  </DialogTrigger>
+                        <Button variant="destructive">Delete Group</Button>
+                      </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Delete Group</DialogTitle>
@@ -197,21 +198,10 @@ const Page = () => {
                   </>
                 ) : (
                   <>
-                    {/* <Button
-                      onClick={() => {
-                        setOpenDialogLeave((prev) => !prev);
-                      }}
-                      variant={"destructive"}
-                    >
-                      <span>Leave Group</span>
-                    </Button> */}
-                    <Dialog
-                      // open={openDialogLeave}
-                      // onOpenChange={setOpenDialogLeave}
-                    >
-                       <DialogTrigger asChild>
-                    <Button variant="destructive" >Leave Group</Button>
-                  </DialogTrigger>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive">Leave Group</Button>
+                      </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Leave Group</DialogTitle>
@@ -223,14 +213,6 @@ const Page = () => {
                           <DialogClose asChild>
                             <Button variant={"outline"}>Cancel</Button>
                           </DialogClose>
-                          {/* <Button
-                            onClick={() => {
-                              setOpenDialogLeave((prev) => !prev);
-                            }}
-                            variant={"outline"}
-                          >
-                            Cancel
-                          </Button> */}
                           <Button onClick={leaveGroup}>Leave</Button>
                         </DialogFooter>
                       </DialogContent>
@@ -276,7 +258,7 @@ const Page = () => {
             </div>
             <div className="border rounded-md col-span-3 min-h-36 p-5">
               <h1 className="text-lg mb-2">Members</h1>
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid md:grid-cols-5 gap-3">
                 {group.member?.some(
                   (member: any) => member.role === "MEMBER"
                 ) ? (
