@@ -67,7 +67,7 @@ export default function HomeLayout({
   );
 }
 
-export const Logo = () => {
+const Logo = () => {
   return (
     <Link
       href="/"
@@ -84,7 +84,7 @@ export const Logo = () => {
     </Link>
   );
 };
-export const LogoIcon = () => {
+const LogoIcon = () => {
   return (
     <Link href="/">
       <Image src={"/icons/calendar.png"} width={30} height={30} alt="logo" />
@@ -121,11 +121,4 @@ const links = [
       <User className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
     ),
   },
-  // {
-  //   label: "Logout",
-  //   href: "#",
-  //   icon: (
-  //     <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-  //   ),
-  // },
 ];
