@@ -21,7 +21,7 @@ const BetaTest = () => {
       </p>
       <div className="flex gap-2 justify-center">
         <Link
-          href="facebook.com/iamjohnandrei"
+          href="https://www.facebook.com/iamjohnandrei"
           target="_blank"
           className="relative z-30 px-4 py-2 ml-2 text-blue-400 text-lg font-medium transition-transform duration-300 ease-in-out hover:translate-x-1"
         >
