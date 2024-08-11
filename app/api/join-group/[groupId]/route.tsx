@@ -7,11 +7,6 @@ export async function GET(
   { params: { groupId } }: { params: { groupId: string } }
 ) {
   try {
-    const auth = getAuth(req);
-    if (!auth || !auth.userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
     const group = await prisma.group.findUnique({
       where: {
         id: groupId,
@@ -35,9 +30,9 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error joining group:', error); // Log the error for debugging
+    console.error('Error retrieving group:', error); // Updated error message
     return NextResponse.json(
-      { message: "An unexpected error occurred", error: (error as Error) },
+      { message: "An unexpected error occurred" }, // Removed error object from response
       { status: 500 }
     );
   }

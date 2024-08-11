@@ -21,7 +21,7 @@ type MemberCardsProps = {
   id: string;
   groupId: string | undefined;
   onUpdateRole?: (userId: string, newRole: string) => void;
-  currentRole?: "ADMIN" | "MEMBER" | "CREATOR";
+  currentRole?: "ADMIN" | "MEMBER" | "CREATOR" | "REMOVED";
 };
 
 const MemberCards: React.FC<MemberCardsProps> = ({
@@ -81,7 +81,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       throw new Error("Missing user ID");
     }
     try {
-      const url = `/api/manage-group/${groupId}/remove-user`;
+      const url = `/api/manage-group/${groupId}`;
       const response = await fetch(url, {
         method: "PUT",
         headers: {
@@ -121,7 +121,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
       }
       const data = await response.json();
       // onUpdateRole(dialogState.id!, "REMOVED");
-      
+      updateMemberRole(dialogState.id!, "REMOVED");
       console.log("User removed from group:", data);
     } catch (error) {
       console.error("Error removing user from group:", error);
@@ -138,7 +138,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
 
   return (
     <div className="border flex flex-col justify-center items-center rounded shadow-lg relative py-10">
-      {currentRole === "ADMIN" || currentRole === "CREATOR" ? (
+      {currentRole === "CREATOR" ? (
         <Dialog open={dialogState.open} onOpenChange={handleCloseDialog}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

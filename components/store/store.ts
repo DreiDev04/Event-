@@ -10,7 +10,7 @@ interface filteredGroupResponse {
   description: string;
   id: string;
   member: {
-    role: "ADMIN" | "MEMBER" | "CREATOR";
+    role: "ADMIN" | "MEMBER" | "CREATOR" | "REMOVED";
     user: {
       id: string;
       name: string | null;
@@ -23,7 +23,7 @@ interface filteredGroupResponse {
 type Store = {
   group: filteredGroupResponse;
   setGroup: (data: filteredGroupResponse) => void;
-  updateMemberRole: (userId: string, newRole: "ADMIN" | "MEMBER" | "CREATOR") => void;
+  updateMemberRole: (userId: string, newRole: "ADMIN" | "MEMBER" | "CREATOR" | "REMOVED") => void;
 };
 
 export const useStore = create<Store>()((set) => ({

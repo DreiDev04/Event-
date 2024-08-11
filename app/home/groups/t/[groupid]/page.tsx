@@ -10,25 +10,28 @@ import ProfileCards from "./_components/ProfileCards";
 import MemberCards from "./_components/MemberCards";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import { Role } from "@prisma/client";
+import { Copy } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { useStore } from "@/components/store/store";
-
 
 const Page = () => {
   const params = useParams();
   const paramsID = params.groupid;
   const { user } = useUser();
   const router = useRouter();
-  const { group, setGroup} = useStore();
-  const [openDialogManage, setOpenDialogManage] = useState<boolean>(false);
-  const [openDialogLeave, setOpenDialogLeave] = useState<boolean>(false);
+  const { group, setGroup } = useStore();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -42,7 +45,6 @@ const Page = () => {
           throw new Error("Failed to fetch group");
         }
         const data = await response.json();
-        // console.log(data.group);
         setGroup(data.filteredGroup);
       } catch (error) {
         console.error("Error fetching group:", error);
@@ -59,24 +61,10 @@ const Page = () => {
     (member: { user: { id: string } }) => {
       return member.user.id === user?.id;
     }
-  ) ;
-  const isUserRO = clientUser && clientUser[0]?.role === "MEMBER" ? true : false;
+  );
+  const isUserRO =
+    clientUser && clientUser[0]?.role === "MEMBER" ? true : false;
   const currentRole = clientUser && clientUser[0]?.role;
-
-  // const updateMemberRole = (userId: string, newRole: string) => {
-  //   setResponse((prevResponse: any) => {
-  //     const updatedMembers = prevResponse.group.members.map((member: any) => {
-  //       if (member.user.id === userId) {
-  //         return { ...member, role: newRole };
-  //       }
-  //       return member;
-  //     });
-  //     return {
-  //       ...prevResponse,
-  //       group: { ...prevResponse.group, members: updatedMembers },
-  //     };
-  //   });
-  // };
 
   const leaveGroup = async () => {
     try {
@@ -89,16 +77,30 @@ const Page = () => {
         throw Error("Failed to leave group");
       }
       const data = await response.json();
-      console.log(data);
-      setOpenDialogManage((prev) => !prev);
       router.push("/home");
     } catch (error) {
       console.error("Error leaving group:", error);
     }
   };
+  const deleteGroup = async () => {
+    try {
+      if (!user?.id || !groupId) {
+        throw new Error("Missing user ID or group ID");
+      }
+      const url = `/api/group/${user?.id}/t/${groupId}/delete`;
+      const response = await fetch(url, { method: "DELETE" });
+      if (!response.ok) {
+        throw Error("Failed to delete group");
+      }
+      const data = await response.json();
+      router.push("/home");
+    } catch (error) {
+      console.error("Error deleting group:", error);
+    }
+  };
 
   // console.log(group);
-  
+
   return (
     <div>
       <div className="w-full p-3 flex justify-between items-center ">
@@ -114,44 +116,127 @@ const Page = () => {
             <div className="border rounded-md md:col-span-2 col-span-3 min-h-36 p-5 gap-2 flex flex-col">
               <h1 className="text-4xl font-semibold">{group.name}</h1>
               <p className="text-lg">{group.description}</p>
-              <p className="text-sm">
-                Members: {group.member?.length}
-              </p>
+              <p className="text-sm">Members: {group.member?.length}</p>
               <p className="text-sm">Group Id: {group.id}</p>
               <div className="flex gap-3">
-
-                <Button
-                  onClick={() => {
-                    setOpenDialogLeave((prev) => !prev);
-                  }}
-                >
-                  <span>Leave Group</span>
-                </Button>
-                <Dialog
-                  open={openDialogLeave}
-                  onOpenChange={setOpenDialogLeave}
-                >
-                  <DialogContent>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">Share</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                      <DialogTitle>Leave Group</DialogTitle>
+                      <DialogTitle>Share link</DialogTitle>
                       <DialogDescription>
-                        Are you sure you want to leave this group?
+                        Anyone who has this link will be able to join this
+                        group.
                       </DialogDescription>
                     </DialogHeader>
-                    <DialogFooter>
-                      <Button
-                        onClick={() => {
-                          setOpenDialogLeave((prev) => !prev);
-                        }}
-                        variant={"outline"}
-                      >
-                        Cancel
+                    <div className="flex items-center space-x-2">
+                      <div className="grid flex-1 gap-2">
+                        <Label htmlFor="link" className="sr-only">
+                          Link
+                        </Label>
+                        <Input
+                          id="link"
+                          defaultValue={"http://localhost:3000/home/joincreate/join/" + group.id}
+                          readOnly
+                        />
+                      </div>
+                      <Button type="submit" size="sm" className="px-3" onClick={()=>{
+                        navigator.clipboard.writeText("http://localhost:3000/home/joincreate/join/" + group.id)
+                        toast({
+                          title: "Copied to clipboard",
+                          description: "You can now share the link with others.",
+                        })
+                      }}>
+                        <span className="sr-only">Copy</span>
+                        <Copy className="h-4 w-4" />
                       </Button>
-                      <Button onClick={leaveGroup}>Leave</Button>
+                    </div>
+                    <DialogFooter className="sm:justify-start">
+                      <DialogClose asChild>
+                        <Button type="button" variant="secondary">
+                          Close
+                        </Button>
+                      </DialogClose>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-
+                {currentRole === "CREATOR" ? (
+                  <>
+                    {/* <Button
+                      onClick={() => {
+                        setOpenDialogDelete((prev) => !prev);
+                      }}
+                      variant={"destructive"}
+                    >
+                      <span>Delete Group</span>
+                    </Button> */}
+                    <Dialog
+                      // open={openDialogDelete}
+                      // onOpenChange={setOpenDialogDelete}
+                    >
+                      <DialogTrigger asChild>
+                    <Button variant="destructive" >Delete Group</Button>
+                  </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Delete Group</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to leave this group?
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant={"outline"}>Cancel</Button>
+                          </DialogClose>
+                          <Button onClick={deleteGroup}>Delete</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </>
+                ) : (
+                  <>
+                    {/* <Button
+                      onClick={() => {
+                        setOpenDialogLeave((prev) => !prev);
+                      }}
+                      variant={"destructive"}
+                    >
+                      <span>Leave Group</span>
+                    </Button> */}
+                    <Dialog
+                      // open={openDialogLeave}
+                      // onOpenChange={setOpenDialogLeave}
+                    >
+                       <DialogTrigger asChild>
+                    <Button variant="destructive" >Leave Group</Button>
+                  </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Leave Group</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to leave this group?
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant={"outline"}>Cancel</Button>
+                          </DialogClose>
+                          {/* <Button
+                            onClick={() => {
+                              setOpenDialogLeave((prev) => !prev);
+                            }}
+                            variant={"outline"}
+                          >
+                            Cancel
+                          </Button> */}
+                          <Button onClick={leaveGroup}>Leave</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </>
+                )}
               </div>
             </div>
             <div className="col-span-3 md:col-span-1 min-h-36">
@@ -161,7 +246,7 @@ const Page = () => {
                 role={"CREATOR"}
               />
             </div>
-            
+
             <div className="border rounded-md col-span-3 min-h-36 p-5">
               <h1 className="text-lg">Admins</h1>
               <div className="grid grid-cols-5 gap-3">

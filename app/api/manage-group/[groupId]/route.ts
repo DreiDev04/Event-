@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prismaClient";
 import { getAuth } from "@clerk/nextjs/server";
 
-
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { groupId: string } }
+  { params: { groupId } }: { params: { groupId: string } }
 ) {
   try {
     const auth = getAuth(req);
-    const {groupId} = params;
 
     if (!auth || !auth.userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -22,17 +20,16 @@ export async function PUT(
       return NextResponse.json({ message: "Invalid role" }, { status: 400 });
     }
 
-    const group = await prisma.group.findUnique({
-      where: { id: groupId },
-    });
-
+    const [group, user] = await Promise.all([
+      prisma.group.findUnique({ where: { id: groupId } }),
+      prisma.groupMember.findFirst({
+        where: { groupId, userId: id },
+      }),
+    ]);
+    
     if (!group) {
       return NextResponse.json({ message: "Group not found" }, { status: 404 });
     }
-
-    const user = await prisma.groupMember.findFirst({
-      where: { groupId: groupId, userId: id },
-    });
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
@@ -41,7 +38,6 @@ export async function PUT(
       where: { id: user.id },
       data: { role: role },
     });
-
 
     return NextResponse.json({ message: `User is now a ${role}` });
   } catch (error) {

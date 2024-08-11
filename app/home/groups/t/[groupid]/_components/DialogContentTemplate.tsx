@@ -1,3 +1,4 @@
+"use client"
 import {
   DialogContent,
   DialogDescription,
@@ -6,6 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 type DialogContentTemplateProps = {
   handleOpenDialog: (content: string) => void;
@@ -18,6 +20,17 @@ export function DialogContentTemplate({
   content,
   onConfirm,
 }: DialogContentTemplateProps) {
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    try {
+      await onConfirm();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <DialogContent aria-description="manage-user">
       <DialogHeader>
@@ -51,7 +64,9 @@ export function DialogContentTemplate({
         <Button type="reset" variant={"outline"} onClick={() => handleOpenDialog("")}>
           Cancel
         </Button>
-        <Button type="submit" onClick={onConfirm}>Confirm</Button>
+        <Button type="submit" onClick={handleConfirm} disabled={loading}>
+          {loading ? "Loading..." : "Confirm"}
+        </Button>
       </DialogFooter>
     </DialogContent>
   );
