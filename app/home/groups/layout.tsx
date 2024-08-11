@@ -15,15 +15,11 @@ const GroupLayout = ({ children }: { children?: React.ReactNode }) => {
   const [userGroups, setUserGroups] = useState<Group[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
   const { user } = useUser();
-
-  if (!user) {
-    return <Loader />;
-  }
-
+  
   useEffect(() => {
     const fetchGroup = async () => {
       try {
-        const response = await fetch(`/api/group/${user.id}`);
+        const response = await fetch(`/api/group/${user?.id}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch groups");
@@ -37,6 +33,10 @@ const GroupLayout = ({ children }: { children?: React.ReactNode }) => {
     };
     fetchGroup();
   }, []);
+  if (!user) {
+    return <Loader />;
+  }
+
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();

@@ -2,7 +2,7 @@
 import React from "react";
 import { useUser } from "@clerk/nextjs";
 
-const page = () => {
+const Page = () => {
   const { user } = useUser();
 
   return (
@@ -15,4 +15,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -13,7 +13,6 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 import React, { useState, useEffect } from "react";
 import { registerLicense } from "@syncfusion/ej2-base";
-import moment from "moment-timezone";
 import "@/styles/calendarui.css";
 import { GroupEvent } from "@prisma/client";
 import { useUser } from "@clerk/nextjs";
@@ -35,6 +34,9 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
   );
   const { user } = useUser();
 
+  if (!user){
+    throw new Error("User not found");
+  }
   useEffect(() => {
     registerLicense(licenseKey);
   }, []);
@@ -42,7 +44,6 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        // console.log("fetching ...");
         const response = await fetch(
           `/api/group/${user?.id}/t/${groupId}/events`,
           {
