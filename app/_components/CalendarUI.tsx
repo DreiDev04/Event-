@@ -171,7 +171,6 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
         selectedDate={new Date()}
         eventSettings={eventSettings}
         actionBegin={handleEvent}
-        timezone="UTC"
         readonly={isRO}
         // className="bg-red-500"
       >
