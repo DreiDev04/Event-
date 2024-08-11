@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
-export const formSchemaCreteGroup = z.object({
+const formSchemaCreteGroup = z.object({
   group_name: z.string().min(3, {
     message: "Group name must be at least 3 characters.",
   }),
@@ -38,6 +38,7 @@ const CreateGroup = () => {
       desc: "",
     },
   });
+
   async function onSubmit(values: z.infer<typeof formSchemaCreteGroup>) {
     setLoading(true);
     try {
