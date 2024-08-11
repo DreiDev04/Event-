@@ -59,6 +59,7 @@ const CreateGroup = () => {
         throw new Error(data.message);
       }
       router.push(`/home/groups/t/${data.groupId}`);
+
     } catch (error: any) {
       console.error("Failed to create group:", error);
       toast({
@@ -66,8 +67,6 @@ const CreateGroup = () => {
         title: "Something went wrong.",
         description: error.message || "An unexpected error occurred.",
       });
-    } finally {
-      setLoading(false);
     }
   }
 

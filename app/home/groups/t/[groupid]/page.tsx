@@ -138,7 +138,7 @@ const Page = () => {
                         </Label>
                         <Input
                           id="link"
-                          defaultValue={"http://localhost:3000/home/joincreate/join/" + group.id}
+                          defaultValue={"https://eventplusplus.vercel.app/home/joincreate/join/" + group.id}
                           readOnly
                         />
                       </div>
