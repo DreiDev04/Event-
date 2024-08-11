@@ -55,7 +55,7 @@ const Page = () => {
     }
   }, [params]);
 
-  console.log("Group: ", group);
+  // console.log("Group: ", group);
   const groupId = group?.id;
   const clientUser = group?.member?.filter(
     (member: { user: { id: string } }) => {

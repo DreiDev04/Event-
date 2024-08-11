@@ -24,7 +24,6 @@ interface ErrorProps {
   status: number;
 }
 
-const ErrorMessage = "Please contact the developer.";
 
 const Page = () => {
   const { groupId } = useParams();
@@ -102,9 +101,11 @@ type InviteProps = {
 const InviteComponent: React.FC<InviteProps> = ({ group, groupId }) => {
   const router = useRouter();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const joinGroup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch(`/api/join-group/${groupId}`, {
         method: "POST",
@@ -120,7 +121,7 @@ const InviteComponent: React.FC<InviteProps> = ({ group, groupId }) => {
           title: "Something went wrong.",
           description: result.message || "An unexpected error occurred.",
         });
-        return; // Stop further execution
+        return;
       }
       router.push(`/home/groups/t/${groupId}`);
     } catch (error: any) {
@@ -133,12 +134,12 @@ const InviteComponent: React.FC<InviteProps> = ({ group, groupId }) => {
   };
 
   return (
-    <div className="min-w-80 border py-10 px-5 rounded-md flex flex-col gap-2 justify-center items-center shadow-lg bg-card">
+    <div className="min-w-80 border py-10 px-5 rounded-md flex flex-col gap-2 justify-center items-center shadow-lg bg-card max-w-28">
       <h1 className="text-3xl font-bold">{group?.name}</h1>
-      <p>{group?.description}</p>
+      <p className="text-center mb-5 line-clamp-4">{group?.description}</p>
       <p className="text-sm underline">Members: {group?.members}</p>
       <form onSubmit={joinGroup}>
-        <Button className="mt-5" type="submit">
+        <Button className="mt-5" type="submit" disabled={loading}>
           Join Group
         </Button>
       </form>
