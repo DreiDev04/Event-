@@ -2,13 +2,12 @@ import {
   IconBrandFacebook,
   IconBrandGmail,
   IconBrandInstagram,
-  IconBrandMessenger,
 } from "@tabler/icons-react";
 import Link from "next/link";
 
 const BetaTest = () => {
   return (
-    <section className="relative flex flex-col w-96 bg-gray-800 rounded-lg overflow-hidden font-sans text-base">
+    <section className="relative flex flex-col w-full max-w-md bg-gray-800 rounded-lg overflow-hidden font-sans text-base sm:w-96">
       <div className="absolute inset-0 rounded-lg bg-gray-900 z-10" />
       <div className="absolute w-1 bg-gradient-to-b from-blue-500 to-purple-600 rounded-sm inset-y-2 left-2 z-20 transition-transform duration-300 ease-in-out hover:translate-x-1" />
       <header className="relative z-30 ml-2 px-4 py-2 text-blue-400 text-lg font-medium transition-transform duration-300 ease-in-out hover:translate-x-1">

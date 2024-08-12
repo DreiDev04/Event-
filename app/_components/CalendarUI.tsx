@@ -172,7 +172,6 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
         eventSettings={eventSettings}
         actionBegin={handleEvent}
         readonly={isRO}
-        // className="bg-red-500"
       >
         <ViewsDirective>
           <ViewDirective option="Week" />
