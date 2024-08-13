@@ -24,7 +24,6 @@ interface ErrorProps {
   status: number;
 }
 
-
 const Page = () => {
   const { groupId } = useParams();
   const [groupInfo, setGroupInfo] = useState<Group | null>(null);
@@ -134,16 +133,17 @@ const InviteComponent: React.FC<InviteProps> = ({ group, groupId }) => {
   };
 
   return (
-    <div className="min-w-80 border py-10 px-5 rounded-md flex flex-col gap-2 justify-center items-center shadow-lg bg-card max-w-28">
-      <h1 className="text-3xl font-bold">{group?.name}</h1>
-      <p className="text-center mb-5 line-clamp-4">{group?.description}</p>
-      <p className="text-sm underline">Members: {group?.members}</p>
-      <form onSubmit={joinGroup}>
-        <Button className="mt-5" type="submit" disabled={loading}>
-          Join Group
-        </Button>
-      </form>
-      
+    <div className="h-screen grid place-items-center">
+      <div className="min-w-80 border py-10 px-5 rounded-md flex flex-col gap-2 justify-center items-center shadow-lg bg-card max-w-28 ">
+        <h1 className="text-3xl font-bold">{group?.name}</h1>
+        <p className="text-center mb-5 line-clamp-4">{group?.description}</p>
+        <p className="text-sm underline">Members: {group?.members}</p>
+        <form onSubmit={joinGroup}>
+          <Button className="mt-5" type="submit" disabled={loading}>
+            Join Group
+          </Button>
+        </form>
+      </div>
     </div>
   );
 };

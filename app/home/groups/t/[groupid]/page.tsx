@@ -231,7 +231,7 @@ const Page = () => {
 
             <div className="border rounded-md col-span-3 min-h-36 p-5">
               <h1 className="text-lg">Admins</h1>
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid md:grid-cols-5 gap-3">
                 {group.member?.some(
                   (member: any) => member.role === "ADMIN"
                 ) ? (

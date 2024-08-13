@@ -43,9 +43,6 @@ export default function HomeLayout({
             </div> 
           </div>
           <div>
-            {/* <SignOutButton /> */}
-            
-
             <SidebarLink
               link={{
                 label: `${user.fullName ? user.fullName : "<no username>"}`,
@@ -74,7 +71,7 @@ export default function HomeLayout({
           </div>
         </SidebarBody>
       </Sidebar>
-      <div className="w-full p-10 border overflow-auto ">{children}</div>
+      <div className="w-full p-3 md:p-10 overflow-auto ">{children}</div>
     </div>
   );
 }

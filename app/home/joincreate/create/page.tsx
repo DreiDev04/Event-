@@ -34,7 +34,7 @@ const CreateGroup = () => {
   const form = useForm<z.infer<typeof formSchemaCreteGroup>>({
     resolver: zodResolver(formSchemaCreteGroup),
     defaultValues: {
-      group_name: "Untitled Group",
+      group_name: "",
       desc: "",
     },
   });
