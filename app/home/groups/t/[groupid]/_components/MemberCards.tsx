@@ -13,7 +13,6 @@ import {
 import { Dialog } from "@/components/ui/dialog";
 import { useStore } from "@/components/store/store";
 
-
 type MemberCardsProps = {
   imageUrl: string;
   name: string;
@@ -45,7 +44,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
     setDialogState({ open: true, content, id });
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog: any = () => {
     setDialogState({ open: false, content: "", id: null });
   };
 
@@ -177,7 +176,7 @@ const MemberCards: React.FC<MemberCardsProps> = ({
         <AvatarImage src={imageUrl} alt="avatar" />
         <AvatarFallback>U</AvatarFallback>
       </Avatar>
-      <p className="text-xl font-bold">{name}</p>
+      <p className="text-xl font-bold text-center">{name}</p>
       <p>{role}</p>
     </div>
   );

@@ -83,6 +83,8 @@ const CalendarUI: React.FC<CalendarUIProps> = ({ groupId, isRO }) => {
 
   const eventSettings: EventSettingsModel = {
     dataSource: timelineResourceData,
+    
+    // enableRecurrenceRule: false,
   };
 
   const handleEvent = async (args: any) => {
